@@ -22,7 +22,7 @@
  */
 package org.ta4j.core.indicators;
 
-import org.ta4j.core.Decimal;
+import org.ta4j.core.decimal.Decimal;
 import org.ta4j.core.Indicator;
 
 /**
@@ -43,7 +43,7 @@ public class SMAIndicator extends CachedIndicator<Decimal> {
 
     @Override
     protected Decimal calculate(int index) {
-        Decimal sum = Decimal.ZERO;
+        Decimal sum = getTimeSeries().getTick(index).getClosePrice();
         for (int i = Math.max(0, index - timeFrame + 1); i <= index; i++) {
             sum = sum.plus(indicator.getValue(i));
         }
