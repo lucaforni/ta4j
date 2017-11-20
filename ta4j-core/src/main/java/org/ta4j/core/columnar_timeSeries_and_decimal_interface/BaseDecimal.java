@@ -1,21 +1,20 @@
-package org.ta4j.core.decimal;
+package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Objects;
 
 /**
- * Immutable, arbitrary-precision signed decimal numbers designed for technical analysis.
+ * Immutable, arbitrary-precision signed columnar_timeSeries_and_decimal_interface numbers designed for technical analysis.
  * <p></p>
- * A {@code Decimal} consists of a {@code BigDecimal} with arbitrary {@link MathContext} (precision and rounding mode).
+ * A {@code NumOperations} consists of a {@code BigDecimal} with arbitrary {@link MathContext} (precision and rounding mode).
  *
  * @see BigDecimal
  * @see MathContext
  * @see RoundingMode
  */
-public final class BaseDecimal implements Decimal {
+public final class BaseDecimal implements NumOperations<BigDecimal> {
 
     private static final long serialVersionUID = 2225130444465033658L;
 
@@ -23,17 +22,69 @@ public final class BaseDecimal implements Decimal {
 
     private final BigDecimal delegate;
 
-    /**
-     * Constructor.
-     * Only used for NaN instance.
-     */
-    private BaseDecimal() {
-        delegate = null;
-    }
+    public static final NumOperationsFactory<BaseDecimal> NUM_OPERATIONS_FACTORY = new NumOperationsFactory<BaseDecimal>() {
+        @Override
+        public BaseDecimal ZERO() {
+            return new BaseDecimal(0);
+        }
+
+        @Override
+        public BaseDecimal ONE() {
+            return new BaseDecimal(1);
+        }
+
+        @Override
+        public BaseDecimal TWO() {
+            return new BaseDecimal(2);
+        }
+
+        @Override
+        public BaseDecimal THREE() {
+            return new BaseDecimal(3);
+        }
+
+        @Override
+        public BaseDecimal TEN() { return new BaseDecimal(10); }
+
+        @Override
+        public BaseDecimal HUNDRED() {
+            return new BaseDecimal(100);
+        }
+
+        @Override
+        public BaseDecimal THOUSAND() {
+            return new BaseDecimal(1000);
+        }
+
+        @Override
+        public NumOperations NaN() {
+            return NumOperations.NaN;
+        }
+
+        @Override
+        public BaseDecimal valueOf(double val) {
+            return new BaseDecimal(val);
+        }
+
+        @Override
+        public BaseDecimal valueOf(int val) {
+            return new BaseDecimal(val);
+        }
+
+        @Override
+        public BaseDecimal valueOf(long val) {
+            return new BaseDecimal(val);
+        }
+
+        @Override
+        public BaseDecimal valueOf(String val) {
+            return new BaseDecimal(val);
+        }
+    };
 
     /**
      * Constructor.
-     * @param val the string representation of the decimal value
+     * @param val the string representation of the columnar_timeSeries_and_decimal_interface value
      */
     private BaseDecimal(String val) {
         delegate = new BigDecimal(val, MATH_CONTEXT);
@@ -59,37 +110,37 @@ public final class BaseDecimal implements Decimal {
         delegate = val;
     }
 
+
     @Override
-    public Decimal get(double val) {
-        return null;
+    public BigDecimal getValue() {
+        return delegate;
     }
 
     /**
-     * Returns a {@code Decimal} whose value is {@code (this + augend)},
+     * Returns a {@code NumOperations} whose value is {@code (this + augend)},
      * with rounding according to the context settings.
-     * @param augend value to be added to this {@code Decimal}.
+     * @param augend value to be added to this {@code NumOperations}.
      * @return {@code this + augend}, rounded as necessary
      * @see BigDecimal#add(java.math.BigDecimal, java.math.MathContext)
      */
-    public Decimal plus(Decimal augend) {
+    public NumOperations plus(NumOperations augend) {
         if(!(augend instanceof BaseDecimal)){
             throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
         }
-        if ((this == Decimal.NaN) || (augend == NaN)) {
+        if ((this == NumOperations.NaN) || (augend == NaN)) {
             return NaN;
         }
         final BaseDecimal baseReplicant = (BaseDecimal) augend;
         return new BaseDecimal(delegate.add(baseReplicant.delegate, MATH_CONTEXT));
     }
-
     /**
-     * Returns a {@code Decimal} whose value is {@code (this - augend)},
+     * Returns a {@code NumOperations} whose value is {@code (this - augend)},
      * with rounding according to the context settings.
-     * @param subtrahend value to be subtracted from this {@code Decimal}.
+     * @param subtrahend value to be subtracted from this {@code NumOperations}.
      * @return {@code this - subtrahend}, rounded as necessary
      * @see BigDecimal#subtract(java.math.BigDecimal, java.math.MathContext)
      */
-    public Decimal minus(Decimal subtrahend) {
+    public NumOperations minus(NumOperations subtrahend) {
         if(!(subtrahend instanceof BaseDecimal)){
             throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
         }
@@ -101,13 +152,13 @@ public final class BaseDecimal implements Decimal {
     }
 
     /**
-     * Returns a {@code Decimal} whose value is {@code this * multiplicand},
+     * Returns a {@code NumOperations} whose value is {@code this * multiplicand},
      * with rounding according to the context settings.
-     * @param multiplicand value to be multiplied by this {@code Decimal}.
+     * @param multiplicand value to be multiplied by this {@code NumOperations}.
      * @return {@code this * multiplicand}, rounded as necessary
      * @see BigDecimal#multiply(java.math.BigDecimal, java.math.MathContext)
      */
-    public Decimal multipliedBy(Decimal multiplicand) {
+    public NumOperations multipliedBy(NumOperations multiplicand) {
         if(!(multiplicand instanceof BaseDecimal)){
             throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
         }
@@ -119,13 +170,13 @@ public final class BaseDecimal implements Decimal {
     }
 
     /**
-     * Returns a {@code Decimal} whose value is {@code (this / divisor)},
+     * Returns a {@code NumOperations} whose value is {@code (this / divisor)},
      * with rounding according to the context settings.
-     * @param divisor value by which this {@code Decimal} is to be divided.
+     * @param divisor value by which this {@code NumOperations} is to be divided.
      * @return {@code this / divisor}, rounded as necessary
      * @see BigDecimal#divide(java.math.BigDecimal, java.math.MathContext)
      */
-    public Decimal dividedBy(Decimal divisor) {
+    public NumOperations dividedBy(NumOperations divisor) {
         if(!(divisor instanceof BaseDecimal)){
             throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
         }
@@ -138,13 +189,13 @@ public final class BaseDecimal implements Decimal {
     }
 
     /**
-     * Returns a {@code Decimal} whose value is {@code (this % divisor)},
+     * Returns a {@code NumOperations} whose value is {@code (this % divisor)},
      * with rounding according to the context settings.
-     * @param divisor value by which this {@code Decimal} is to be divided.
+     * @param divisor value by which this {@code NumOperations} is to be divided.
      * @return {@code this % divisor}, rounded as necessary.
      * @see BigDecimal#remainder(java.math.BigDecimal, java.math.MathContext)
      */
-    public Decimal remainder(Decimal divisor) {
+    public NumOperations remainder(NumOperations divisor) {
         if(!(divisor instanceof BaseDecimal)){
             throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
         }
@@ -158,12 +209,12 @@ public final class BaseDecimal implements Decimal {
 
 
     /**
-     * Returns a {@code Decimal} whose value is <tt>(this<sup>n</sup>)</tt>.
-     * @param n power to raise this {@code Decimal} to.
+     * Returns a {@code NumOperations} whose value is <tt>(this<sup>n</sup>)</tt>.
+     * @param n power to raise this {@code NumOperations} to.
      * @return <tt>this<sup>n</sup></tt>
      * @see BigDecimal#pow(int, java.math.MathContext)
      */
-    public Decimal pow(int n) {
+    public NumOperations pow(int n) {
         if (this == NaN) {
             return NaN;
         }
@@ -171,12 +222,12 @@ public final class BaseDecimal implements Decimal {
     }
 
     /**
-     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code Decimal}.
+     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code NumOperations}.
      * /!\ Warning! Uses the {@code StrictMath#log(double)} method under the hood.
      * @return the natural logarithm (base e) of {@code this}
      * @see StrictMath#log(double)
      */
-    public Decimal log() {
+    public NumOperations log() {
         if (this == NaN) {
             return NaN;
         }
@@ -184,12 +235,12 @@ public final class BaseDecimal implements Decimal {
     }
 
     /**
-     * Returns the correctly rounded positive square root of the <code>double</code> value of this {@code Decimal}.
+     * Returns the correctly rounded positive square root of the <code>double</code> value of this {@code NumOperations}.
      * /!\ Warning! Uses the {@code StrictMath#sqrt(double)} method under the hood.
      * @return the positive square root of {@code this}
      * @see StrictMath#sqrt(double)
      */
-    public Decimal sqrt() {
+    public NumOperations sqrt() {
         if (this == NaN) {
             return NaN;
         }
@@ -197,11 +248,11 @@ public final class BaseDecimal implements Decimal {
     }
 
     /**
-     * Returns a {@code Decimal} whose value is the absolute value
-     * of this {@code Decimal}.
+     * Returns a {@code NumOperations} whose value is the absolute value
+     * of this {@code NumOperations}.
      * @return {@code abs(this)}
      */
-    public Decimal abs() {
+    public NumOperations abs() {
         if (this == NaN) {
             return NaN;
         }
@@ -216,7 +267,7 @@ public final class BaseDecimal implements Decimal {
         if (this == NaN) {
             return false;
         }
-        return compareTo(get(0)) == 0;
+        return compareTo(valueOf(0)) == 0;
     }
 
     /**
@@ -227,7 +278,7 @@ public final class BaseDecimal implements Decimal {
         if (this == NaN) {
             return false;
         }
-        return compareTo(get(0)) > 0;
+        return compareTo(valueOf(0)) > 0;
     }
 
     /**
@@ -238,7 +289,7 @@ public final class BaseDecimal implements Decimal {
         if (this == NaN) {
             return false;
         }
-        return compareTo(get(0)) >= 0;
+        return compareTo(valueOf(0)) >= 0;
     }
 
     /**
@@ -257,7 +308,7 @@ public final class BaseDecimal implements Decimal {
         if (this == NaN) {
             return false;
         }
-        return compareTo(get(0)) < 0;
+        return compareTo(valueOf(0)) < 0;
     }
 
     /**
@@ -268,7 +319,7 @@ public final class BaseDecimal implements Decimal {
         if (this == NaN) {
             return false;
         }
-        return compareTo(get(0)) <= 0;
+        return compareTo(valueOf(0)) <= 0;
     }
 
     /**
@@ -276,7 +327,7 @@ public final class BaseDecimal implements Decimal {
      * @param other the other value, not null
      * @return true is this is greater than the specified value, false otherwise
      */
-    public boolean isEqual(Decimal other) {
+    public boolean isEqual(NumOperations other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -288,7 +339,7 @@ public final class BaseDecimal implements Decimal {
      * @param other the other value, not null
      * @return true is this is greater than the specified value, false otherwise
      */
-    public boolean isGreaterThan(Decimal other) {
+    public boolean isGreaterThan(NumOperations other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -300,7 +351,7 @@ public final class BaseDecimal implements Decimal {
      * @param other the other value, not null
      * @return true is this is greater than or equal to the specified value, false otherwise
      */
-    public boolean isGreaterThanOrEqual(Decimal other) {
+    public boolean isGreaterThanOrEqual(NumOperations other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -312,7 +363,7 @@ public final class BaseDecimal implements Decimal {
      * @param other the other value, not null
      * @return true is this is less than the specified value, false otherwise
      */
-    public boolean isLessThan(Decimal other) {
+    public boolean isLessThan(NumOperations other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -324,7 +375,7 @@ public final class BaseDecimal implements Decimal {
      * @param other the other value, not null
      * @return true is this is less than or equal to the specified value, false otherwise
      */
-    public boolean isLessThanOrEqual(Decimal other) {
+    public boolean isLessThanOrEqual(NumOperations other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -337,10 +388,10 @@ public final class BaseDecimal implements Decimal {
      * @param other value with which the minimum is to be computed
      * @return the {@code Decimal} whose value is the lesser of this
      *         {@code Decimal} and {@code other}.  If they are equal,
-     *         as defined by the {@link #compareTo(Decimal) compareTo}
+     *         as defined by the {@link #compareTo(NumOperations) compareTo}
      *         method, {@code this} is returned.
      */
-    public Decimal min(Decimal other) {
+    public NumOperations min(NumOperations other) {
         if ((this == NaN) || (other == NaN)) {
             return NaN;
         }
@@ -352,10 +403,10 @@ public final class BaseDecimal implements Decimal {
      * @param  other value with which the maximum is to be computed
      * @return the {@code Decimal} whose value is the greater of this
      *         {@code Decimal} and {@code other}.  If they are equal,
-     *         as defined by the {@link #compareTo(Decimal) compareTo}
+     *         as defined by the {@link #compareTo(NumOperations) compareTo}
      *         method, {@code this} is returned.
      */
-    public Decimal max(Decimal other) {
+    public NumOperations max(NumOperations other) {
         if ((this == NaN) || (other == NaN)) {
             return NaN;
         }
@@ -363,8 +414,8 @@ public final class BaseDecimal implements Decimal {
     }
 
     /**
-     * Converts this {@code Decimal} to a {@code double}.
-     * @return this {@code Decimal} converted to a {@code double}
+     * Converts this {@code NumOperations} to a {@code double}.
+     * @return this {@code NumOperations} converted to a {@code double}
      * @see BigDecimal#doubleValue()
      */
     public double toDouble() {
@@ -396,7 +447,7 @@ public final class BaseDecimal implements Decimal {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Decimal)) {
+        if (!(obj instanceof NumOperations)) {
             return false;
         }
         if(!(obj instanceof BaseDecimal)){
@@ -412,7 +463,7 @@ public final class BaseDecimal implements Decimal {
 
 
     @Override
-    public int compareTo(Decimal other) {
+    public int compareTo(NumOperations other) {
         if(!(other instanceof BaseDecimal)) {
             throw new IllegalArgumentException("Must be an BaseDecimal!");
         }
@@ -421,5 +472,9 @@ public final class BaseDecimal implements Decimal {
             return 0;
         }
         return delegate.compareTo(baseOther.delegate);
+    }
+
+    public static BaseDecimal valueOf(double val){
+        return new BaseDecimal(val);
     }
 }

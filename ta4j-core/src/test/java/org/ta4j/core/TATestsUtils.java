@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 /**
- * Utility class for {@code Decimal} tests.
+ * Utility class for {@code NumOperations} tests.
  */
 public class TATestsUtils {
 
@@ -34,8 +34,8 @@ public class TATestsUtils {
     public static final double TA_OFFSET = 0.0001;
 
     /**
-     * Verifies that the actual {@code Decimal} value is equal to the given {@code String} representation.
-     * @param actual the actual {@code Decimal} value
+     * Verifies that the actual {@code NumOperations} value is equal to the given {@code String} representation.
+     * @param actual the actual {@code NumOperations} value
      * @param expected the given {@code String} representation to compare the actual value to
      * @throws AssertionError if the actual value is not equal to the given {@code String} representation
      */
@@ -44,8 +44,8 @@ public class TATestsUtils {
     }
 
     /**
-     * Verifies that the actual {@code Decimal} value is equal to the given {@code Integer} representation.
-     * @param actual the actual {@code Decimal} value
+     * Verifies that the actual {@code NumOperations} value is equal to the given {@code Integer} representation.
+     * @param actual the actual {@code NumOperations} value
      * @param expected the given {@code Integer} representation to compare the actual value to
      * @throws AssertionError if the actual value is not equal to the given {@code Integer} representation
      */
@@ -54,8 +54,8 @@ public class TATestsUtils {
     }
 
     /**
-     * Verifies that the actual {@code Decimal} value is equal (within a positive offset) to the given {@code Double} representation.
-     * @param actual the actual {@code Decimal} value
+     * Verifies that the actual {@code NumOperations} value is equal (within a positive offset) to the given {@code Double} representation.
+     * @param actual the actual {@code NumOperations} value
      * @param expected the given {@code Double} representation to compare the actual value to
      * @throws AssertionError if the actual value is not equal to the given {@code Double} representation
      */
@@ -64,8 +64,8 @@ public class TATestsUtils {
     }
 
     /**
-     * Verifies that the actual {@code Decimal} value is not equal to the given {@code Integer} representation.
-     * @param actual the actual {@code Decimal} value
+     * Verifies that the actual {@code NumOperations} value is not equal to the given {@code Integer} representation.
+     * @param actual the actual {@code NumOperations} value
      * @param unexpected the given {@code Integer} representation to compare the actual value to
      * @throws AssertionError if the actual value is equal to the given {@code Integer} representation
      */

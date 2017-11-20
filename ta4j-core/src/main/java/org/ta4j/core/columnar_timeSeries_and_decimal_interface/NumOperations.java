@@ -20,167 +20,174 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.decimal;
+package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public interface Decimal extends Serializable, Comparable<Decimal> {
+/**
+ * @param <D> the delegate of the class that implements NumOperations
+ *              See {@link LongDecimal} -> delegate {@link org.decimal4j.immutable.Decimal10f}
+ *              See {@link BaseDecimal} -> delegate {@link BigDecimal}
+ *
+ * @See {@link NumOperationsFactory<D>}
+ */
+public interface NumOperations<D extends Number> extends Serializable, Comparable<NumOperations> {
 
-    Decimal NaN = null;
 
+    static final NumOperations NaN = null;
 
-    Decimal get(double val);
+    D getValue();
 
     /**
-     * Returns a {@code Decimal} whose value is {@code (this + augend)},
-     * @param augend value to be added to this {@code Decimal}.
+     * Returns a {@code NumOperations} whose value is {@code (this + augend)},
+     * @param augend value to be added to this {@code NumOperations}.
      * @return {@code this + augend}, rounded as necessary
      */
-     Decimal plus(Decimal augend);
+     NumOperations plus(NumOperations augend);
 
     /**
-     * Returns a {@code Decimal} whose value is {@code (this - augend)},
-     * @param subtrahend value to be subtracted from this {@code Decimal}.
+     * Returns a {@code NumOperations} whose value is {@code (this - augend)},
+     * @param subtrahend value to be subtracted from this {@code NumOperations}.
      * @return {@code this - subtrahend}, rounded as necessary
      */
-    Decimal minus(Decimal subtrahend);
+    NumOperations minus(NumOperations subtrahend);
 
     /**
-     * Returns a {@code Decimal} whose value is {@code this * multiplicand},
-     * @param multiplicand value to be multiplied by this {@code Decimal}.
+     * Returns a {@code NumOperations} whose value is {@code this * multiplicand},
+     * @param multiplicand value to be multiplied by this {@code NumOperations}.
      * @return {@code this * multiplicand}, rounded as necessary
      */
-    Decimal multipliedBy(Decimal multiplicand);
+    NumOperations multipliedBy(NumOperations multiplicand);
 
     /**
-     * Returns a {@code Decimal} whose value is {@code (this / divisor)},
-     * @param divisor value by which this {@code Decimal} is to be divided.
+     * Returns a {@code NumOperations} whose value is {@code (this / divisor)},
+     * @param divisor value by which this {@code NumOperations} is to be divided.
      * @return {@code this / divisor}, rounded as necessary
      */
-    public abstract Decimal dividedBy(Decimal divisor);
+    NumOperations dividedBy(NumOperations divisor);
 
     /**
-     * Returns a {@code Decimal} whose value is {@code (this % divisor)},
-     * @param divisor value by which this {@code Decimal} is to be divided.
+     * Returns a {@code NumOperations} whose value is {@code (this % divisor)},
+     * @param divisor value by which this {@code NumOperations} is to be divided.
      * @return {@code this % divisor}, rounded as necessary.
      */
-    public abstract Decimal remainder(Decimal divisor);
+    NumOperations remainder(NumOperations divisor);
 
     /**
-     * Returns a {@code Decimal} whose value is <tt>(this<sup>n</sup>)</tt>.
-     * @param n power to raise this {@code Decimal} to.
+     * Returns a {@code NumOperations} whose value is <tt>(this<sup>n</sup>)</tt>.
+     * @param n power to raise this {@code NumOperations} to.
      * @return <tt>this<sup>n</sup></tt>
      */
-    public abstract Decimal pow(int n);
+    NumOperations pow(int n);
 
     /**
-     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code Decimal}.
+     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code NumOperations}.
      * @return the natural logarithm (base e) of {@code this}
      * @see StrictMath#log(double)
      */
-    public abstract Decimal log();
+    NumOperations log();
 
     /**
-     * Returns a {@code Decimal} whose value is the absolute value
-     * of this {@code Decimal}.
+     * Returns a {@code NumOperations} whose value is the absolute value
+     * of this {@code NumOperations}.
      * @return {@code abs(this)}
      */
-    public abstract Decimal abs();
+    NumOperations abs();
 
     /**
      * Checks if the value is zero.
      * @return true if the value is zero, false otherwise
      */
-    public abstract boolean isZero();
+    boolean isZero();
 
     /**
      * Checks if the value is greater than zero.
      * @return true if the value is greater than zero, false otherwise
      */
-    public abstract boolean isPositive();
+    boolean isPositive();
 
     /**
      * Checks if the value is zero or greater.
      * @return true if the value is zero or greater, false otherwise
      */
-    public abstract boolean isPositiveOrZero();
+    boolean isPositiveOrZero();
 
     /**
      * Checks if the value is less than zero.
      * @return true if the value is less than zero, false otherwise
      */
-    public abstract boolean isNegative();
+    boolean isNegative();
 
     /**
      * Checks if the value is zero or less.
      * @return true if the value is zero or less, false otherwise
      */
-    public abstract boolean isNegativeOrZero();
+    boolean isNegativeOrZero();
 
     /**
      * Checks if this value is equal to another.
      * @param other the other value, not null
      * @return true is this is greater than the specified value, false otherwise
      */
-    public abstract boolean isEqual(Decimal other);
+    boolean isEqual(NumOperations other);
 
     /**
      * Checks if this value is greater than another.
      * @param other the other value, not null
      * @return true is this is greater than the specified value, false otherwise
      */
-    public abstract boolean isGreaterThan(Decimal other);
+    boolean isGreaterThan(NumOperations other);
 
     /**
      * Checks if this value is greater than or equal to another.
      * @param other the other value, not null
      * @return true is this is greater than or equal to the specified value, false otherwise
      */
-    public abstract boolean isGreaterThanOrEqual(Decimal other);
+    boolean isGreaterThanOrEqual(NumOperations other);
 
     /**
      * Checks if this value is less than another.
      * @param other the other value, not null
      * @return true is this is less than the specified value, false otherwise
      */
-    public abstract boolean isLessThan(Decimal other);
+    boolean isLessThan(NumOperations other);
 
     /**
-     * Returns the minimum of this {@code Decimal} and {@code other}.
+     * Returns the minimum of this {@code NumOperations} and {@code other}.
      * @param other value with which the minimum is to be computed
-     * @return the {@code Decimal} whose value is the lesser of this
-     *         {@code Decimal} and {@code other}.  If they are equal,
+     * @return the {@code NumOperations} whose value is the lesser of this
+     *         {@code NumOperations} and {@code other}.  If they are equal,
      *         method, {@code this} is returned.
      */
-    public abstract Decimal min(Decimal other);
+    NumOperations min(NumOperations other);
 
     /**
-     * Returns the maximum of this {@code Decimal} and {@code other}.
+     * Returns the maximum of this {@code NumOperations} and {@code other}.
      * @param  other value with which the maximum is to be computed
-     * @return the {@code Decimal} whose value is the greater of this
-     *         {@code Decimal} and {@code other}.  If they are equal,
+     * @return the {@code NumOperations} whose value is the greater of this
+     *         {@code NumOperations} and {@code other}.  If they are equal,
      *         method, {@code this} is returned.
      */
-    public abstract Decimal max(Decimal other);
+    NumOperations max(NumOperations other);
 
     /**
-     * Converts this {@code Decimal} to a {@code double}.
-     * @return this {@code Decimal} converted to a {@code double}
+     * Converts this {@code NumOperations} to a {@code double}.
+     * @return this {@code NumOperations} converted to a {@code double}
      * @see BigDecimal#doubleValue()
      */
-    public abstract double toDouble();
+    double toDouble();
 
     @Override
-    public abstract int hashCode();
+    int hashCode();
 
     @Override
-    public abstract String toString();
+    String toString();
 
     /**
      * {@inheritDoc}
      * @apiNote: This method should return true if `this` and `obj` are both NaN.
      */
     @Override
-    public abstract boolean equals(Object obj);
+    boolean equals(Object obj);
 }

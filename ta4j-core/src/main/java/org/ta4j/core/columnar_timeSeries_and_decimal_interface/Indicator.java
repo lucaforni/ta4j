@@ -20,42 +20,31 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.indicators;
+package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
 
 
-import org.ta4j.core.Decimal;
-import org.ta4j.core.Indicator;
+import java.io.Serializable;
 
 /**
- * Simple moving average (SMA) indicator.
+ * Indicator over a {@link TimeSeries time series}.
  * <p></p>
+ * For each index of the time series, returns a value of type <b>T</b>.
+ * @param <T> the type of returned value (Double, Boolean, etc.)
  */
-public class SMAIndicator extends CachedIndicator<Decimal> {
+public interface Indicator<T extends NumOperations> extends Serializable {
 
-    private final Indicator<Decimal> indicator;
+    /**
+     * @param index the tick index
+     * @return the value of the indicator
+     */
+    T getValue(int index);
 
-    private final int timeFrame;
+    /**
+     * @return the related time series
+     */
+    TimeSeries<T> getTimeSeries();
 
-    public SMAIndicator(Indicator<Decimal> indicator, int timeFrame) {
-        super(indicator);
-        this.indicator = indicator;
-        this.timeFrame = timeFrame;
-    }
+    NumOperationsFactory<T> getNumFactory();
 
-    @Override
-    protected Decimal calculate(int index) {
-        Decimal sum = Decimal.ZERO;
-        for (int i = Math.max(0, index - timeFrame + 1); i <= index; i++) {
-            sum = sum.plus(indicator.getValue(i));
-        }
-
-        final int realTimeFrame = Math.min(timeFrame, index + 1);
-        return sum.dividedBy(Decimal.valueOf(realTimeFrame));
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + " timeFrame: " + timeFrame;
-    }
 
 }

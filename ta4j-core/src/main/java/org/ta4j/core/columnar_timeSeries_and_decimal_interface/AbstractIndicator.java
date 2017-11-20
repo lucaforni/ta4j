@@ -20,42 +20,42 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.indicators;
+package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
 
-
-import org.ta4j.core.Decimal;
-import org.ta4j.core.Indicator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Simple moving average (SMA) indicator.
- * <p></p>
+ * Abstract {@link Indicator indicator}.
+ * <p/>
  */
-public class SMAIndicator extends CachedIndicator<Decimal> {
+public abstract class AbstractIndicator<T extends NumOperations> implements Indicator<T> {
 
-    private final Indicator<Decimal> indicator;
+    /** The logger */
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final int timeFrame;
+    private TimeSeries series;
 
-    public SMAIndicator(Indicator<Decimal> indicator, int timeFrame) {
-        super(indicator);
-        this.indicator = indicator;
-        this.timeFrame = timeFrame;
+    /**
+     * Constructor.
+     * @param series the related time series
+     */
+    public AbstractIndicator(TimeSeries series) {
+        this.series = series;
     }
 
     @Override
-    protected Decimal calculate(int index) {
-        Decimal sum = Decimal.ZERO;
-        for (int i = Math.max(0, index - timeFrame + 1); i <= index; i++) {
-            sum = sum.plus(indicator.getValue(i));
-        }
-
-        final int realTimeFrame = Math.min(timeFrame, index + 1);
-        return sum.dividedBy(Decimal.valueOf(realTimeFrame));
+    public TimeSeries<T> getTimeSeries() {
+        return series;
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " timeFrame: " + timeFrame;
+        return getClass().getSimpleName();
     }
 
+    @Override
+    public NumOperationsFactory<T> getNumFactory(){
+        return series.getNumOperationsFactory();
+    }
 }

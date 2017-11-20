@@ -20,42 +20,25 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.indicators;
+package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
 
 
-import org.ta4j.core.Decimal;
-import org.ta4j.core.Indicator;
 
 /**
- * Simple moving average (SMA) indicator.
+ * Close price indicator.
  * <p></p>
  */
-public class SMAIndicator extends CachedIndicator<Decimal> {
+public class ClosePriceIndicator extends CachedIndicator<NumOperations> {
 
-    private final Indicator<Decimal> indicator;
+    private TimeSeries series;
 
-    private final int timeFrame;
-
-    public SMAIndicator(Indicator<Decimal> indicator, int timeFrame) {
-        super(indicator);
-        this.indicator = indicator;
-        this.timeFrame = timeFrame;
+    public ClosePriceIndicator(TimeSeries series) {
+        super(series);
+        this.series = series;
     }
 
     @Override
-    protected Decimal calculate(int index) {
-        Decimal sum = Decimal.ZERO;
-        for (int i = Math.max(0, index - timeFrame + 1); i <= index; i++) {
-            sum = sum.plus(indicator.getValue(i));
-        }
-
-        final int realTimeFrame = Math.min(timeFrame, index + 1);
-        return sum.dividedBy(Decimal.valueOf(realTimeFrame));
+    protected NumOperations calculate(int index) {
+        return series.getClosePrice(index);
     }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + " timeFrame: " + timeFrame;
-    }
-
 }

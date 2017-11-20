@@ -20,37 +20,36 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.indicators;
+package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
 
 
-import org.ta4j.core.Decimal;
-import org.ta4j.core.Indicator;
+
 
 /**
  * Simple moving average (SMA) indicator.
  * <p></p>
  */
-public class SMAIndicator extends CachedIndicator<Decimal> {
+public class SMAIndicator extends CachedIndicator<NumOperations> {
 
-    private final Indicator<Decimal> indicator;
+    private final Indicator<NumOperations> indicator;
 
     private final int timeFrame;
 
-    public SMAIndicator(Indicator<Decimal> indicator, int timeFrame) {
+    public SMAIndicator(Indicator indicator, int timeFrame) {
         super(indicator);
         this.indicator = indicator;
         this.timeFrame = timeFrame;
     }
 
     @Override
-    protected Decimal calculate(int index) {
-        Decimal sum = Decimal.ZERO;
+    protected NumOperations calculate(int index) {
+        NumOperations sum = getNumFactory().ZERO();
         for (int i = Math.max(0, index - timeFrame + 1); i <= index; i++) {
             sum = sum.plus(indicator.getValue(i));
         }
 
         final int realTimeFrame = Math.min(timeFrame, index + 1);
-        return sum.dividedBy(Decimal.valueOf(realTimeFrame));
+        return sum.dividedBy(getNumFactory().valueOf(realTimeFrame));
     }
 
     @Override
