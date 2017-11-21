@@ -28,7 +28,7 @@ package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
  * Close price indicator.
  * <p></p>
  */
-public class ClosePriceIndicator extends CachedIndicator<NumOperations> {
+public class ClosePriceIndicator extends CachedIndicator<Value> {
 
     private TimeSeries series;
 
@@ -38,7 +38,7 @@ public class ClosePriceIndicator extends CachedIndicator<NumOperations> {
     }
 
     @Override
-    protected NumOperations calculate(int index) {
+    protected Value calculate(int index) {
         return series.getClosePrice(index);
     }
 }

@@ -33,7 +33,7 @@ import java.time.format.DateTimeFormatter;
  * <p/>
  * Bar object is aggregated open/high/low/close/volume/etc. data over a time period.
  */
-public interface Bar<D extends NumOperations> extends Serializable {
+public interface Bar<D extends Value> extends Serializable {
 
     /**
      * @return the open price of the period

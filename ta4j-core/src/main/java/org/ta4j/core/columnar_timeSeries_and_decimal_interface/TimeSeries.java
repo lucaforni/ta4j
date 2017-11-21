@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Time series interface
  */
-public interface TimeSeries<D extends NumOperations> {
+public interface TimeSeries<D extends Value> {
 
 
     NumOperationsFactory<D> getNumOperationsFactory();

@@ -33,7 +33,7 @@ import java.util.List;
  * <p></p>
  * Caches the constructor of the indicator. Avoid to calculate the same index of the indicator twice.
  */
-public abstract class CachedIndicator<T extends NumOperations> extends AbstractIndicator<T> {
+public abstract class CachedIndicator<T extends Value> extends AbstractIndicator<T> {
 
     /** List of cached results */
     private final List<T> results = new ArrayList<T>();

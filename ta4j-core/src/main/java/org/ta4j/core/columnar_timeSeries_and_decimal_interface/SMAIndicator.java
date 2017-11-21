@@ -29,9 +29,9 @@ package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
  * Simple moving average (SMA) indicator.
  * <p></p>
  */
-public class SMAIndicator extends CachedIndicator<NumOperations> {
+public class SMAIndicator extends CachedIndicator<Value> {
 
-    private final Indicator<NumOperations> indicator;
+    private final Indicator<Value> indicator;
 
     private final int timeFrame;
 
@@ -42,8 +42,9 @@ public class SMAIndicator extends CachedIndicator<NumOperations> {
     }
 
     @Override
-    protected NumOperations calculate(int index) {
-        NumOperations sum = getNumFactory().ZERO();
+    protected Value calculate(int index) {
+
+        Value sum = getNumFactory().ZERO();
         for (int i = Math.max(0, index - timeFrame + 1); i <= index; i++) {
             sum = sum.plus(indicator.getValue(i));
         }

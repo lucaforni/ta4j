@@ -22,78 +22,82 @@
  */
 package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
 
+import org.ta4j.core.columnar_timeSeries_and_decimal_interface.value_types.BaseDecimal;
+import org.ta4j.core.columnar_timeSeries_and_decimal_interface.value_types.LongDecimal;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * @param <D> the delegate of the class that implements NumOperations
+ * @param <D> the delegate of the class that implements Value
  *              See {@link LongDecimal} -> delegate {@link org.decimal4j.immutable.Decimal10f}
  *              See {@link BaseDecimal} -> delegate {@link BigDecimal}
  *
  * @See {@link NumOperationsFactory<D>}
  */
-public interface NumOperations<D extends Number> extends Serializable, Comparable<NumOperations> {
+public interface Value<D extends Number> extends Serializable, Comparable<Value> {
 
 
-    static final NumOperations NaN = null;
+    static final Value NaN = null;
 
     D getValue();
 
+    String getName();
     /**
-     * Returns a {@code NumOperations} whose value is {@code (this + augend)},
-     * @param augend value to be added to this {@code NumOperations}.
+     * Returns a {@code Value} whose value is {@code (this + augend)},
+     * @param augend value to be added to this {@code Value}.
      * @return {@code this + augend}, rounded as necessary
      */
-     NumOperations plus(NumOperations augend);
+     Value plus(Value augend);
 
     /**
-     * Returns a {@code NumOperations} whose value is {@code (this - augend)},
-     * @param subtrahend value to be subtracted from this {@code NumOperations}.
+     * Returns a {@code Value} whose value is {@code (this - augend)},
+     * @param subtrahend value to be subtracted from this {@code Value}.
      * @return {@code this - subtrahend}, rounded as necessary
      */
-    NumOperations minus(NumOperations subtrahend);
+    Value minus(Value subtrahend);
 
     /**
-     * Returns a {@code NumOperations} whose value is {@code this * multiplicand},
-     * @param multiplicand value to be multiplied by this {@code NumOperations}.
+     * Returns a {@code Value} whose value is {@code this * multiplicand},
+     * @param multiplicand value to be multiplied by this {@code Value}.
      * @return {@code this * multiplicand}, rounded as necessary
      */
-    NumOperations multipliedBy(NumOperations multiplicand);
+    Value multipliedBy(Value multiplicand);
 
     /**
-     * Returns a {@code NumOperations} whose value is {@code (this / divisor)},
-     * @param divisor value by which this {@code NumOperations} is to be divided.
+     * Returns a {@code Value} whose value is {@code (this / divisor)},
+     * @param divisor value by which this {@code Value} is to be divided.
      * @return {@code this / divisor}, rounded as necessary
      */
-    NumOperations dividedBy(NumOperations divisor);
+    Value dividedBy(Value divisor);
 
     /**
-     * Returns a {@code NumOperations} whose value is {@code (this % divisor)},
-     * @param divisor value by which this {@code NumOperations} is to be divided.
+     * Returns a {@code Value} whose value is {@code (this % divisor)},
+     * @param divisor value by which this {@code Value} is to be divided.
      * @return {@code this % divisor}, rounded as necessary.
      */
-    NumOperations remainder(NumOperations divisor);
+    Value remainder(Value divisor);
 
     /**
-     * Returns a {@code NumOperations} whose value is <tt>(this<sup>n</sup>)</tt>.
-     * @param n power to raise this {@code NumOperations} to.
+     * Returns a {@code Value} whose value is <tt>(this<sup>n</sup>)</tt>.
+     * @param n power to raise this {@code Value} to.
      * @return <tt>this<sup>n</sup></tt>
      */
-    NumOperations pow(int n);
+    Value pow(int n);
 
     /**
-     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code NumOperations}.
+     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code Value}.
      * @return the natural logarithm (base e) of {@code this}
      * @see StrictMath#log(double)
      */
-    NumOperations log();
+    Value log();
 
     /**
-     * Returns a {@code NumOperations} whose value is the absolute value
-     * of this {@code NumOperations}.
+     * Returns a {@code Value} whose value is the absolute value
+     * of this {@code Value}.
      * @return {@code abs(this)}
      */
-    NumOperations abs();
+    Value abs();
 
     /**
      * Checks if the value is zero.
@@ -130,50 +134,57 @@ public interface NumOperations<D extends Number> extends Serializable, Comparabl
      * @param other the other value, not null
      * @return true is this is greater than the specified value, false otherwise
      */
-    boolean isEqual(NumOperations other);
+    boolean isEqual(Value other);
 
     /**
      * Checks if this value is greater than another.
      * @param other the other value, not null
      * @return true is this is greater than the specified value, false otherwise
      */
-    boolean isGreaterThan(NumOperations other);
+    boolean isGreaterThan(Value other);
 
     /**
      * Checks if this value is greater than or equal to another.
      * @param other the other value, not null
      * @return true is this is greater than or equal to the specified value, false otherwise
      */
-    boolean isGreaterThanOrEqual(NumOperations other);
+    boolean isGreaterThanOrEqual(Value other);
 
     /**
      * Checks if this value is less than another.
      * @param other the other value, not null
      * @return true is this is less than the specified value, false otherwise
      */
-    boolean isLessThan(NumOperations other);
+    boolean isLessThan(Value other);
 
     /**
-     * Returns the minimum of this {@code NumOperations} and {@code other}.
+     * Checks if this value is less than another.
+     * @param other the other value, not null
+     * @return true is this is less than or equal the specified value, false otherwise
+     */
+    boolean isLessThanOrEqual(Value other);
+
+    /**
+     * Returns the minimum of this {@code Value} and {@code other}.
      * @param other value with which the minimum is to be computed
-     * @return the {@code NumOperations} whose value is the lesser of this
-     *         {@code NumOperations} and {@code other}.  If they are equal,
+     * @return the {@code Value} whose value is the lesser of this
+     *         {@code Value} and {@code other}.  If they are equal,
      *         method, {@code this} is returned.
      */
-    NumOperations min(NumOperations other);
+    Value min(Value other);
 
     /**
-     * Returns the maximum of this {@code NumOperations} and {@code other}.
+     * Returns the maximum of this {@code Value} and {@code other}.
      * @param  other value with which the maximum is to be computed
-     * @return the {@code NumOperations} whose value is the greater of this
-     *         {@code NumOperations} and {@code other}.  If they are equal,
+     * @return the {@code Value} whose value is the greater of this
+     *         {@code Value} and {@code other}.  If they are equal,
      *         method, {@code this} is returned.
      */
-    NumOperations max(NumOperations other);
+    Value max(Value other);
 
     /**
-     * Converts this {@code NumOperations} to a {@code double}.
-     * @return this {@code NumOperations} converted to a {@code double}
+     * Converts this {@code Value} to a {@code double}.
+     * @return this {@code Value} converted to a {@code double}
      * @see BigDecimal#doubleValue()
      */
     double toDouble();

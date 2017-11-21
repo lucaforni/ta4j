@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * Abstract {@link Indicator indicator}.
  * <p/>
  */
-public abstract class AbstractIndicator<T extends NumOperations> implements Indicator<T> {
+public abstract class AbstractIndicator<T extends Value> implements Indicator<T> {
 
     /** The logger */
     protected final Logger log = LoggerFactory.getLogger(getClass());

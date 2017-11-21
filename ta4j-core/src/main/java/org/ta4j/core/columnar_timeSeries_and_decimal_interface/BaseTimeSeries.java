@@ -3,7 +3,7 @@ package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseTimeSeries<D extends NumOperations> extends AbstractTimeSeries<D> {
+public class BaseTimeSeries<D extends Value> extends AbstractTimeSeries<D> {
 
     public BaseTimeSeries(int capacity, NumOperationsFactory<D> numOperationsFactory) {
         super(capacity, numOperationsFactory);

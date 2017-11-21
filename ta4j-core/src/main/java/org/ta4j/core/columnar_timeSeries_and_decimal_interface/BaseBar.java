@@ -22,8 +22,6 @@
  */
 package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
 
-import org.ta4j.core.Tick;
-
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -32,7 +30,7 @@ import java.time.ZonedDateTime;
  * Base implementation of a {@link Bar}.
  * <p/>
  */
-public class BaseBar<D extends NumOperations> implements Bar<D> {
+public class BaseBar<D extends Value> implements Bar<D> {
 
 	private static final long serialVersionUID = 8038383777467488147L;
 
@@ -94,7 +92,7 @@ public class BaseBar<D extends NumOperations> implements Bar<D> {
     }
 
     /**
-     * Constructor.NumOperations
+     * Constructor.Value
      * @param endTime the end time of the tick period
      * @param openPrice the open price of the tick period
      * @param highPrice the highest price of the tick period
@@ -242,7 +240,7 @@ public class BaseBar<D extends NumOperations> implements Bar<D> {
 
 
     /**    @Override
-    public void addTrade(NumOperations tradeVolume, NumOperations tradePrice) {
+    public void addTrade(Value tradeVolume, Value tradePrice) {
 
     }
      * Adds a trade at the end of tick period.

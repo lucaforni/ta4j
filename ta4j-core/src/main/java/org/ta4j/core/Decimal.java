@@ -31,7 +31,7 @@ import java.util.Objects;
 /**
  * Immutable, arbitrary-precision signed columnar_timeSeries_and_decimal_interface numbers designed for technical analysis.
  * <p></p>
- * A {@code NumOperations} consists of a {@code BigDecimal} with arbitrary {@link MathContext} (precision and rounding mode).
+ * A {@code Value} consists of a {@code BigDecimal} with arbitrary {@link MathContext} (precision and rounding mode).
  *
  * @see BigDecimal
  * @see MathContext
@@ -93,9 +93,9 @@ public final class Decimal implements Comparable<Decimal>, Serializable {
     }
 
     /**
-     * Returns a {@code NumOperations} whose value is {@code (this + augend)},
+     * Returns a {@code Value} whose value is {@code (this + augend)},
      * with rounding according to the context settings.
-     * @param augend value to be added to this {@code NumOperations}.
+     * @param augend value to be added to this {@code Value}.
      * @return {@code this + augend}, rounded as necessary
      * @see BigDecimal#add(java.math.BigDecimal, java.math.MathContext)
      */
@@ -107,9 +107,9 @@ public final class Decimal implements Comparable<Decimal>, Serializable {
     }
 
     /**
-     * Returns a {@code NumOperations} whose value is {@code (this - augend)},
+     * Returns a {@code Value} whose value is {@code (this - augend)},
      * with rounding according to the context settings.
-     * @param subtrahend value to be subtracted from this {@code NumOperations}.
+     * @param subtrahend value to be subtracted from this {@code Value}.
      * @return {@code this - subtrahend}, rounded as necessary
      * @see BigDecimal#subtract(java.math.BigDecimal, java.math.MathContext)
      */
@@ -121,9 +121,9 @@ public final class Decimal implements Comparable<Decimal>, Serializable {
     }
 
     /**
-     * Returns a {@code NumOperations} whose value is {@code this * multiplicand},
+     * Returns a {@code Value} whose value is {@code this * multiplicand},
      * with rounding according to the context settings.
-     * @param multiplicand value to be multiplied by this {@code NumOperations}.
+     * @param multiplicand value to be multiplied by this {@code Value}.
      * @return {@code this * multiplicand}, rounded as necessary
      * @see BigDecimal#multiply(java.math.BigDecimal, java.math.MathContext)
      */
@@ -135,9 +135,9 @@ public final class Decimal implements Comparable<Decimal>, Serializable {
     }
 
     /**
-     * Returns a {@code NumOperations} whose value is {@code (this / divisor)},
+     * Returns a {@code Value} whose value is {@code (this / divisor)},
      * with rounding according to the context settings.
-     * @param divisor value by which this {@code NumOperations} is to be divided.
+     * @param divisor value by which this {@code Value} is to be divided.
      * @return {@code this / divisor}, rounded as necessary
      * @see BigDecimal#divide(java.math.BigDecimal, java.math.MathContext)
      */
@@ -149,9 +149,9 @@ public final class Decimal implements Comparable<Decimal>, Serializable {
     }
 
     /**
-     * Returns a {@code NumOperations} whose value is {@code (this % divisor)},
+     * Returns a {@code Value} whose value is {@code (this % divisor)},
      * with rounding according to the context settings.
-     * @param divisor value by which this {@code NumOperations} is to be divided.
+     * @param divisor value by which this {@code Value} is to be divided.
      * @return {@code this % divisor}, rounded as necessary.
      * @see BigDecimal#remainder(java.math.BigDecimal, java.math.MathContext)
      */
@@ -164,8 +164,8 @@ public final class Decimal implements Comparable<Decimal>, Serializable {
 
 
     /**
-     * Returns a {@code NumOperations} whose value is <tt>(this<sup>n</sup>)</tt>.
-     * @param n power to raise this {@code NumOperations} to.
+     * Returns a {@code Value} whose value is <tt>(this<sup>n</sup>)</tt>.
+     * @param n power to raise this {@code Value} to.
      * @return <tt>this<sup>n</sup></tt>
      * @see BigDecimal#pow(int, java.math.MathContext)
      */
@@ -177,7 +177,7 @@ public final class Decimal implements Comparable<Decimal>, Serializable {
     }
     
     /**
-     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code NumOperations}.
+     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code Value}.
      * /!\ Warning! Uses the {@code StrictMath#log(double)} method under the hood.
      * @return the natural logarithm (base e) of {@code this}
      * @see StrictMath#log(double)
@@ -190,7 +190,7 @@ public final class Decimal implements Comparable<Decimal>, Serializable {
     }
 
     /**
-     * Returns the correctly rounded positive square root of the <code>double</code> value of this {@code NumOperations}.
+     * Returns the correctly rounded positive square root of the <code>double</code> value of this {@code Value}.
      * /!\ Warning! Uses the {@code StrictMath#sqrt(double)} method under the hood.
      * @return the positive square root of {@code this}
      * @see StrictMath#sqrt(double)
@@ -203,8 +203,8 @@ public final class Decimal implements Comparable<Decimal>, Serializable {
     }
 
     /**
-     * Returns a {@code NumOperations} whose value is the absolute value
-     * of this {@code NumOperations}.
+     * Returns a {@code Value} whose value is the absolute value
+     * of this {@code Value}.
      * @return {@code abs(this)}
      */
     public Decimal abs() {
@@ -346,10 +346,10 @@ public final class Decimal implements Comparable<Decimal>, Serializable {
     }
 
     /**
-     * Returns the minimum of this {@code NumOperations} and {@code other}.
+     * Returns the minimum of this {@code Value} and {@code other}.
      * @param other value with which the minimum is to be computed
-     * @return the {@code NumOperations} whose value is the lesser of this
-     *         {@code NumOperations} and {@code other}.  If they are equal,
+     * @return the {@code Value} whose value is the lesser of this
+     *         {@code Value} and {@code other}.  If they are equal,
      *         as defined by the {@link #compareTo(Decimal) compareTo}
      *         method, {@code this} is returned.
      */
@@ -361,10 +361,10 @@ public final class Decimal implements Comparable<Decimal>, Serializable {
     }
 
     /**
-     * Returns the maximum of this {@code NumOperations} and {@code other}.
+     * Returns the maximum of this {@code Value} and {@code other}.
      * @param  other value with which the maximum is to be computed
-     * @return the {@code NumOperations} whose value is the greater of this
-     *         {@code NumOperations} and {@code other}.  If they are equal,
+     * @return the {@code Value} whose value is the greater of this
+     *         {@code Value} and {@code other}.  If they are equal,
      *         as defined by the {@link #compareTo(Decimal) compareTo}
      *         method, {@code this} is returned.
      */
@@ -376,8 +376,8 @@ public final class Decimal implements Comparable<Decimal>, Serializable {
     }
 
     /**
-     * Converts this {@code NumOperations} to a {@code double}.
-     * @return this {@code NumOperations} converted to a {@code double}
+     * Converts this {@code Value} to a {@code double}.
+     * @return this {@code Value} converted to a {@code double}
      * @see BigDecimal#doubleValue()
      */
     public double toDouble() {

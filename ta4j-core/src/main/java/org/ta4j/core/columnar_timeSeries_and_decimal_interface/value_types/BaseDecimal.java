@@ -1,4 +1,7 @@
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.columnar_timeSeries_and_decimal_interface.value_types;
+
+import org.ta4j.core.columnar_timeSeries_and_decimal_interface.Value;
+import org.ta4j.core.columnar_timeSeries_and_decimal_interface.NumOperationsFactory;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -8,13 +11,13 @@ import java.util.Objects;
 /**
  * Immutable, arbitrary-precision signed columnar_timeSeries_and_decimal_interface numbers designed for technical analysis.
  * <p></p>
- * A {@code NumOperations} consists of a {@code BigDecimal} with arbitrary {@link MathContext} (precision and rounding mode).
+ * A {@code Value} consists of a {@code BigDecimal} with arbitrary {@link MathContext} (precision and rounding mode).
  *
  * @see BigDecimal
  * @see MathContext
  * @see RoundingMode
  */
-public final class BaseDecimal implements NumOperations<BigDecimal> {
+public final class BaseDecimal implements Value<BigDecimal> {
 
     private static final long serialVersionUID = 2225130444465033658L;
 
@@ -57,8 +60,8 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
         }
 
         @Override
-        public NumOperations NaN() {
-            return NumOperations.NaN;
+        public Value NaN() {
+            return Value.NaN;
         }
 
         @Override
@@ -116,31 +119,36 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
         return delegate;
     }
 
+    @Override
+    public String getName() {
+        return "BaseDecimal";
+    }
+
     /**
-     * Returns a {@code NumOperations} whose value is {@code (this + augend)},
+     * Returns a {@code Value} whose value is {@code (this + augend)},
      * with rounding according to the context settings.
-     * @param augend value to be added to this {@code NumOperations}.
+     * @param augend value to be added to this {@code Value}.
      * @return {@code this + augend}, rounded as necessary
      * @see BigDecimal#add(java.math.BigDecimal, java.math.MathContext)
      */
-    public NumOperations plus(NumOperations augend) {
+    public Value plus(Value augend) {
         if(!(augend instanceof BaseDecimal)){
             throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
         }
-        if ((this == NumOperations.NaN) || (augend == NaN)) {
+        if ((this == Value.NaN) || (augend == NaN)) {
             return NaN;
         }
         final BaseDecimal baseReplicant = (BaseDecimal) augend;
         return new BaseDecimal(delegate.add(baseReplicant.delegate, MATH_CONTEXT));
     }
     /**
-     * Returns a {@code NumOperations} whose value is {@code (this - augend)},
+     * Returns a {@code Value} whose value is {@code (this - augend)},
      * with rounding according to the context settings.
-     * @param subtrahend value to be subtracted from this {@code NumOperations}.
+     * @param subtrahend value to be subtracted from this {@code Value}.
      * @return {@code this - subtrahend}, rounded as necessary
      * @see BigDecimal#subtract(java.math.BigDecimal, java.math.MathContext)
      */
-    public NumOperations minus(NumOperations subtrahend) {
+    public Value minus(Value subtrahend) {
         if(!(subtrahend instanceof BaseDecimal)){
             throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
         }
@@ -152,13 +160,13 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
     }
 
     /**
-     * Returns a {@code NumOperations} whose value is {@code this * multiplicand},
+     * Returns a {@code Value} whose value is {@code this * multiplicand},
      * with rounding according to the context settings.
-     * @param multiplicand value to be multiplied by this {@code NumOperations}.
+     * @param multiplicand value to be multiplied by this {@code Value}.
      * @return {@code this * multiplicand}, rounded as necessary
      * @see BigDecimal#multiply(java.math.BigDecimal, java.math.MathContext)
      */
-    public NumOperations multipliedBy(NumOperations multiplicand) {
+    public Value multipliedBy(Value multiplicand) {
         if(!(multiplicand instanceof BaseDecimal)){
             throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
         }
@@ -170,13 +178,13 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
     }
 
     /**
-     * Returns a {@code NumOperations} whose value is {@code (this / divisor)},
+     * Returns a {@code Value} whose value is {@code (this / divisor)},
      * with rounding according to the context settings.
-     * @param divisor value by which this {@code NumOperations} is to be divided.
+     * @param divisor value by which this {@code Value} is to be divided.
      * @return {@code this / divisor}, rounded as necessary
      * @see BigDecimal#divide(java.math.BigDecimal, java.math.MathContext)
      */
-    public NumOperations dividedBy(NumOperations divisor) {
+    public Value dividedBy(Value divisor) {
         if(!(divisor instanceof BaseDecimal)){
             throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
         }
@@ -189,13 +197,13 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
     }
 
     /**
-     * Returns a {@code NumOperations} whose value is {@code (this % divisor)},
+     * Returns a {@code Value} whose value is {@code (this % divisor)},
      * with rounding according to the context settings.
-     * @param divisor value by which this {@code NumOperations} is to be divided.
+     * @param divisor value by which this {@code Value} is to be divided.
      * @return {@code this % divisor}, rounded as necessary.
      * @see BigDecimal#remainder(java.math.BigDecimal, java.math.MathContext)
      */
-    public NumOperations remainder(NumOperations divisor) {
+    public Value remainder(Value divisor) {
         if(!(divisor instanceof BaseDecimal)){
             throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
         }
@@ -209,12 +217,12 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
 
 
     /**
-     * Returns a {@code NumOperations} whose value is <tt>(this<sup>n</sup>)</tt>.
-     * @param n power to raise this {@code NumOperations} to.
+     * Returns a {@code Value} whose value is <tt>(this<sup>n</sup>)</tt>.
+     * @param n power to raise this {@code Value} to.
      * @return <tt>this<sup>n</sup></tt>
      * @see BigDecimal#pow(int, java.math.MathContext)
      */
-    public NumOperations pow(int n) {
+    public Value pow(int n) {
         if (this == NaN) {
             return NaN;
         }
@@ -222,12 +230,12 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
     }
 
     /**
-     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code NumOperations}.
+     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code Value}.
      * /!\ Warning! Uses the {@code StrictMath#log(double)} method under the hood.
      * @return the natural logarithm (base e) of {@code this}
      * @see StrictMath#log(double)
      */
-    public NumOperations log() {
+    public Value log() {
         if (this == NaN) {
             return NaN;
         }
@@ -235,12 +243,12 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
     }
 
     /**
-     * Returns the correctly rounded positive square root of the <code>double</code> value of this {@code NumOperations}.
+     * Returns the correctly rounded positive square root of the <code>double</code> value of this {@code Value}.
      * /!\ Warning! Uses the {@code StrictMath#sqrt(double)} method under the hood.
      * @return the positive square root of {@code this}
      * @see StrictMath#sqrt(double)
      */
-    public NumOperations sqrt() {
+    public Value sqrt() {
         if (this == NaN) {
             return NaN;
         }
@@ -248,11 +256,11 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
     }
 
     /**
-     * Returns a {@code NumOperations} whose value is the absolute value
-     * of this {@code NumOperations}.
+     * Returns a {@code Value} whose value is the absolute value
+     * of this {@code Value}.
      * @return {@code abs(this)}
      */
-    public NumOperations abs() {
+    public Value abs() {
         if (this == NaN) {
             return NaN;
         }
@@ -327,7 +335,7 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
      * @param other the other value, not null
      * @return true is this is greater than the specified value, false otherwise
      */
-    public boolean isEqual(NumOperations other) {
+    public boolean isEqual(Value other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -339,7 +347,7 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
      * @param other the other value, not null
      * @return true is this is greater than the specified value, false otherwise
      */
-    public boolean isGreaterThan(NumOperations other) {
+    public boolean isGreaterThan(Value other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -351,7 +359,7 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
      * @param other the other value, not null
      * @return true is this is greater than or equal to the specified value, false otherwise
      */
-    public boolean isGreaterThanOrEqual(NumOperations other) {
+    public boolean isGreaterThanOrEqual(Value other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -363,7 +371,7 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
      * @param other the other value, not null
      * @return true is this is less than the specified value, false otherwise
      */
-    public boolean isLessThan(NumOperations other) {
+    public boolean isLessThan(Value other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -375,7 +383,7 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
      * @param other the other value, not null
      * @return true is this is less than or equal to the specified value, false otherwise
      */
-    public boolean isLessThanOrEqual(NumOperations other) {
+    public boolean isLessThanOrEqual(Value other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -388,10 +396,10 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
      * @param other value with which the minimum is to be computed
      * @return the {@code Decimal} whose value is the lesser of this
      *         {@code Decimal} and {@code other}.  If they are equal,
-     *         as defined by the {@link #compareTo(NumOperations) compareTo}
+     *         as defined by the {@link #compareTo(Value) compareTo}
      *         method, {@code this} is returned.
      */
-    public NumOperations min(NumOperations other) {
+    public Value min(Value other) {
         if ((this == NaN) || (other == NaN)) {
             return NaN;
         }
@@ -403,10 +411,10 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
      * @param  other value with which the maximum is to be computed
      * @return the {@code Decimal} whose value is the greater of this
      *         {@code Decimal} and {@code other}.  If they are equal,
-     *         as defined by the {@link #compareTo(NumOperations) compareTo}
+     *         as defined by the {@link #compareTo(Value) compareTo}
      *         method, {@code this} is returned.
      */
-    public NumOperations max(NumOperations other) {
+    public Value max(Value other) {
         if ((this == NaN) || (other == NaN)) {
             return NaN;
         }
@@ -414,8 +422,8 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
     }
 
     /**
-     * Converts this {@code NumOperations} to a {@code double}.
-     * @return this {@code NumOperations} converted to a {@code double}
+     * Converts this {@code Value} to a {@code double}.
+     * @return this {@code Value} converted to a {@code double}
      * @see BigDecimal#doubleValue()
      */
     public double toDouble() {
@@ -447,7 +455,7 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof NumOperations)) {
+        if (!(obj instanceof Value)) {
             return false;
         }
         if(!(obj instanceof BaseDecimal)){
@@ -463,7 +471,7 @@ public final class BaseDecimal implements NumOperations<BigDecimal> {
 
 
     @Override
-    public int compareTo(NumOperations other) {
+    public int compareTo(Value other) {
         if(!(other instanceof BaseDecimal)) {
             throw new IllegalArgumentException("Must be an BaseDecimal!");
         }

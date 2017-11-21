@@ -1,6 +1,5 @@
 package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
 
-import java.lang.reflect.Array;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -14,20 +13,20 @@ import java.util.stream.StreamSupport;
 /**
  * A time series that stores the bar data following a columnar store approach
  * @param <D> the data type for OHLC data, volume and amount
- *           see {@link NumOperations}
+ *           see {@link Value}
  *           see {@link TimeSeries}
  */
-public abstract class AbstractTimeSeries<D extends NumOperations> implements TimeSeries<D>, Iterable<Bar<D>> {
+public abstract class AbstractTimeSeries<D extends Value> implements TimeSeries<D>, Iterable<Bar<D>> {
 
     protected String name;
 
-    protected NumOperations[] openPrice;
-    protected NumOperations[] minPrice;
-    protected NumOperations[] maxPrice;
-    protected NumOperations[] closePrice;
-    protected NumOperations[] volume;
+    protected Value[] openPrice;
+    protected Value[] minPrice;
+    protected Value[] maxPrice;
+    protected Value[] closePrice;
+    protected Value[] volume;
     protected int[] trades;
-    protected NumOperations[] amount;
+    protected Value[] amount;
     protected Duration[] timePeriod; // remove this by enum of period for the whole time series?
     protected ZonedDateTime[] beginTime; // work with long as timestamp?
     protected ZonedDateTime[] endTime;
@@ -61,12 +60,12 @@ public abstract class AbstractTimeSeries<D extends NumOperations> implements Tim
         this.capacity = capacity;
         this.isWindow = isWindow;
         this.numOperationsFactory = numOperationsFactory;
-        openPrice = new NumOperations[capacity]; //https://stackoverflow.com/questions/529085/how-to-create-a-generic-array-in-java
-        minPrice = new NumOperations[capacity];
-        maxPrice = new NumOperations[capacity];
-        closePrice = new NumOperations[capacity];
-        volume = new NumOperations[capacity];
-        amount = new NumOperations[capacity];
+        openPrice = new Value[capacity]; //https://stackoverflow.com/questions/529085/how-to-create-a-generic-array-in-java
+        minPrice = new Value[capacity];
+        maxPrice = new Value[capacity];
+        closePrice = new Value[capacity];
+        volume = new Value[capacity];
+        amount = new Value[capacity];
         timePeriod = new Duration[capacity];
         beginTime = new ZonedDateTime[capacity];
         endTime = new ZonedDateTime[capacity];
@@ -129,55 +128,64 @@ public abstract class AbstractTimeSeries<D extends NumOperations> implements Tim
     public D getOpenPrice(int index){
         return (D) openPrice[index];
     }
+
     public D getMinPrice(int index){
-        return (D)  minPrice[index];
+        return (D) minPrice[index];
     }
+
     public D getMaxPrice(int index){
         return (D)  maxPrice[index];
     }
+
     public D getClosePrice(int index){
-        return (D)  closePrice[index];
+        return (D) closePrice[index];
     }
+
     public D getAmount(int index){
         return (D) amount[index];
     }
+
     public D getVolume(int index){
         return (D) volume[index];
     }
+
     public int getTrades(int index){
         return trades[index];
     }
+
     public Duration getDuration(int index){
         return timePeriod[index];
     }
+
     public ZonedDateTime getBeginTime(int index){
         return beginTime[index];
     }
+
     public ZonedDateTime getEndTime(int index){
         return endTime[index];
     }
 
-    public Stream<NumOperations> getOpenPrices(){
+    public Stream<Value> getOpenPrices(){
         return Arrays.stream(openPrice);
     }
 
-    public Stream<NumOperations> getMinPrices(){
+    public Stream<Value> getMinPrices(){
         return Arrays.stream(minPrice);
     }
 
-    public Stream<NumOperations> getMaxPrices(){
+    public Stream<Value> getMaxPrices(){
         return Arrays.stream(maxPrice);
     }
 
-    public Stream<NumOperations> getClosePrices(){
+    public Stream<Value> getClosePrices(){
         return Arrays.stream(closePrice);
     }
 
-    public Stream<NumOperations> getVolumes(){
+    public Stream<Value> getVolumes(){
         return Arrays.stream(volume);
     }
 
-    public Stream<NumOperations> getAmounts(){
+    public Stream<Value> getAmounts(){
         return Arrays.stream(amount);
     }
 
@@ -482,7 +490,7 @@ public abstract class AbstractTimeSeries<D extends NumOperations> implements Tim
         }
 
         @Override
-        public void addTrade(NumOperations tradeVolume, NumOperations tradePrice) {
+        public void addTrade(Value tradeVolume, Value tradePrice) {
             //TODO: implement
         }
 

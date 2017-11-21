@@ -1,9 +1,11 @@
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.columnar_timeSeries_and_decimal_interface.value_types;
 
 
 import org.decimal4j.immutable.Decimal5f;
+import org.ta4j.core.columnar_timeSeries_and_decimal_interface.Value;
+import org.ta4j.core.columnar_timeSeries_and_decimal_interface.NumOperationsFactory;
 
-public class LongDecimal implements NumOperations<Decimal5f>{
+public class LongDecimal implements Value<Decimal5f> {
 
     private final Decimal5f delegate;
 
@@ -44,8 +46,8 @@ public class LongDecimal implements NumOperations<Decimal5f>{
         }
 
         @Override
-        public NumOperations NaN() {
-            return NumOperations.NaN;
+        public Value NaN() {
+            return Value.NaN;
         }
 
         @Override
@@ -92,7 +94,12 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public NumOperations plus(NumOperations augend) {
+    public String getName() {
+        return "LongDecimal (Decimal5f)";
+    }
+
+    @Override
+    public Value plus(Value augend) {
         if(!(augend instanceof LongDecimal)){
             throw new IllegalArgumentException("Instance of LongDecimal is needed!");
         }
@@ -104,7 +111,7 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public NumOperations minus(NumOperations subtrahend) {
+    public Value minus(Value subtrahend) {
         if(!(subtrahend instanceof LongDecimal)){
             throw new IllegalArgumentException("Instance of LongDecimal is needed!");
         }
@@ -116,7 +123,7 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public NumOperations multipliedBy(NumOperations multiplicand) {
+    public Value multipliedBy(Value multiplicand) {
         if(!(multiplicand instanceof LongDecimal)){
             throw new IllegalArgumentException("Instance of LongDecimal is needed!");
         }
@@ -128,7 +135,7 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public NumOperations dividedBy(NumOperations divisor) {
+    public Value dividedBy(Value divisor) {
         if(!(divisor instanceof LongDecimal)){
             throw new IllegalArgumentException("Instance of LongDecimal is needed!");
         }
@@ -140,7 +147,7 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public NumOperations remainder(NumOperations divisor) {
+    public Value remainder(Value divisor) {
         if(!(divisor instanceof LongDecimal)){
             throw new IllegalArgumentException("Instance of LongDecimal is needed!");
         }
@@ -152,7 +159,7 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public NumOperations pow(int n) {
+    public Value pow(int n) {
         if ((this == NaN)) {
             return NaN;
         }
@@ -160,7 +167,7 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public NumOperations log() {
+    public Value log() {
         if ((this == NaN)) {
             return NaN;
         }
@@ -168,7 +175,7 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public NumOperations abs() {
+    public Value abs() {
         if ((this == NaN)) {
             return NaN;
         }
@@ -216,7 +223,7 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public boolean isEqual(NumOperations other) {
+    public boolean isEqual(Value other) {
         if (!(other instanceof LongDecimal)) {
             throw new IllegalArgumentException("Instance of LongDecimal is needed!");
         }
@@ -227,7 +234,7 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public boolean isGreaterThan(NumOperations other) {
+    public boolean isGreaterThan(Value other) {
         if (!(other instanceof LongDecimal)) {
             throw new IllegalArgumentException("Instance of LongDecimal is needed!");
         }
@@ -238,7 +245,7 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public boolean isGreaterThanOrEqual(NumOperations other) {
+    public boolean isGreaterThanOrEqual(Value other) {
         if (!(other instanceof LongDecimal)) {
             throw new IllegalArgumentException("Instance of LongDecimal is needed!");
         }
@@ -249,7 +256,7 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public boolean isLessThan(NumOperations other) {
+    public boolean isLessThan(Value other) {
         if (!(other instanceof LongDecimal)) {
             throw new IllegalArgumentException("Instance of LongDecimal is needed!");
         }
@@ -260,7 +267,18 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public NumOperations min(NumOperations other) {
+    public boolean isLessThanOrEqual(Value other) {
+        if (!(other instanceof LongDecimal)) {
+            throw new IllegalArgumentException("Instance of LongDecimal is needed!");
+        }
+        if ((this == NaN)) {
+            return false;
+        }
+        return delegate.isLessThanOrEqualTo(((LongDecimal) other).delegate);
+    }
+
+    @Override
+    public Value min(Value other) {
         if (!(other instanceof LongDecimal)) {
             throw new IllegalArgumentException("Instance of LongDecimal is needed!");
         }
@@ -273,7 +291,7 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public NumOperations max(NumOperations other) {
+    public Value max(Value other) {
         if (!(other instanceof LongDecimal)) {
             throw new IllegalArgumentException("Instance of LongDecimal is needed!");
         }
@@ -286,7 +304,7 @@ public class LongDecimal implements NumOperations<Decimal5f>{
     }
 
     @Override
-    public int compareTo(NumOperations other) {
+    public int compareTo(Value other) {
         if ((this == NaN) || (other == NaN)) {
             return 0;
         }

@@ -31,7 +31,7 @@ import java.io.Serializable;
  * For each index of the time series, returns a value of type <b>T</b>.
  * @param <T> the type of returned value (Double, Boolean, etc.)
  */
-public interface Indicator<T extends NumOperations> extends Serializable {
+public interface Indicator<T extends Value> extends Serializable {
 
     /**
      * @param index the tick index

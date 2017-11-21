@@ -2,9 +2,9 @@ package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
 
 /**
  * Factory to access the valueOf functions
- * Every class that implements the {@link NumOperations NumOperations Interface} has also to
+ * Every class that implements the {@link Value Value Interface} has also to
  * implement its {@link NumOperationsFactory static Factory} by <b>convention</d>
- * @param <I> The {@link NumOperations NumOperations} class
+ * @param <I> The {@link Value Value} class
  */
 public interface NumOperationsFactory<I> {
 
@@ -15,7 +15,7 @@ public interface NumOperationsFactory<I> {
     I TEN();
     I HUNDRED();
     I THOUSAND();
-    NumOperations NaN();
+    Value NaN();
 
     default I createInstance(Class<I> clazz)throws Exception {
         return clazz.newInstance();
