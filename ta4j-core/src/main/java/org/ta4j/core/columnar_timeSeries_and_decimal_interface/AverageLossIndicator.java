@@ -22,39 +22,26 @@
  */
 package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Abstract {@link Indicator indicator}.
- * <p/>
+ * Average loss indicator.
+ * <p></p>
  */
-public abstract class AbstractIndicator<T extends Value> implements Indicator<T> {
+public class AverageLossIndicator extends CachedIndicator<Value> {
 
-    /** The logger */
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    private final CumulatedLossesIndicator cumulatedLosses;
+    private final NumOperationsFactory<Value> numFa = getNumFactory();
+    private final int timeFrame;
 
-    private TimeSeries series;
-    /**
-     * Constructor.
-     * @param series the related time series
-     */
-    public AbstractIndicator(TimeSeries series) {
-        this.series = series;
+    public AverageLossIndicator(Indicator<Value> indicator, int timeFrame) {
+        super(indicator);
+        this.cumulatedLosses = new CumulatedLossesIndicator(indicator, timeFrame);
+        this.timeFrame = timeFrame;
     }
 
     @Override
-    public TimeSeries<T> getTimeSeries() {
-        return series;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
-    public NumOperationsFactory<T> getNumFactory(){
-        return series.getNumOperationsFactory();
+    protected Value calculate(int index) {
+        final int realTimeFrame = Math.min(timeFrame, index + 1);
+        return cumulatedLosses.getValue(index).dividedBy(numFa.valueOf(realTimeFrame));
     }
 }

@@ -22,39 +22,32 @@
  */
 package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Abstract {@link Indicator indicator}.
- * <p/>
+ * Cumulated losses indicator.
+ * <p></p>
  */
-public abstract class AbstractIndicator<T extends Value> implements Indicator<T> {
+public class CumulatedLossesIndicator extends CachedIndicator<Value> {
 
-    /** The logger */
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    private final Indicator<Value> indicator;
 
-    private TimeSeries series;
-    /**
-     * Constructor.
-     * @param series the related time series
-     */
-    public AbstractIndicator(TimeSeries series) {
-        this.series = series;
+    private final int timeFrame;
+    private final NumOperationsFactory<Value> num = getNumFactory();
+
+    public CumulatedLossesIndicator(Indicator<Value> indicator, int timeFrame) {
+        super(indicator);
+        this.indicator = indicator;
+        this.timeFrame = timeFrame;
     }
 
     @Override
-    public TimeSeries<T> getTimeSeries() {
-        return series;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
-    public NumOperationsFactory<T> getNumFactory(){
-        return series.getNumOperationsFactory();
+    protected Value calculate(int index) {
+        Value sumOfLosses = num.valueOf(0);
+        for (int i = Math.max(1, index - timeFrame + 1); i <= index; i++) {
+            if (indicator.getValue(i).isLessThan(indicator.getValue(i - 1))) {
+                sumOfLosses = sumOfLosses.plus(indicator.getValue(i - 1).minus(indicator.getValue(i)));
+            }
+        }
+        return sumOfLosses;
     }
 }

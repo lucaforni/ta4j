@@ -7,6 +7,7 @@ import org.ta4j.core.columnar_timeSeries_and_decimal_interface.value_types.Doubl
 import org.ta4j.core.columnar_timeSeries_and_decimal_interface.value_types.LongDecimal;
 import org.ta4j.core.mocks.MockTick;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -144,7 +145,7 @@ public class InterfaceTest {
         return input;
     }
 
-    private <D extends Value> List<Bar<D>> getBarInput(int capacity, NumOperationsFactory<D> numFac){
+    private <D extends Value> List<Bar<D>> getBarInput(int capacity, NumOperationsFactory<D> numFac) {
         int initialCapacity = capacity;
         double[] input = new double[initialCapacity];
         List<Bar<D>> bars = new ArrayList<>();
@@ -155,5 +156,25 @@ public class InterfaceTest {
             bars.add(b);
         }
         return bars;
+
+    }
+
+    @Test
+    public void floatingPointVsFixPoint(){
+        NumOperationsFactory dFac = DoubleDecimal.NUM_OPERATIONS_FACTORY;
+        NumOperationsFactory bFac = BaseDecimal.NUM_OPERATIONS_FACTORY;
+
+        TimeSeries<DoubleDecimal> tsDouble = new BaseTimeSeries<DoubleDecimal>(dFac);
+        TimeSeries<BaseDecimal> tsBigDecimal = new BaseTimeSeries<BaseDecimal>(bFac);
+
+        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+
     }
 }
