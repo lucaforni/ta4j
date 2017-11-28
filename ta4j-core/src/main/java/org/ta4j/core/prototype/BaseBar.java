@@ -20,7 +20,10 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.prototype;
+
+import org.ta4j.core.prototype.num.Num;
+import org.ta4j.core.prototype.num.NumFactory;
 
 import java.time.Duration;
 import java.time.ZoneId;
@@ -30,11 +33,11 @@ import java.time.ZonedDateTime;
  * Base implementation of a {@link Bar}.
  * <p/>
  */
-public class BaseBar<D extends Value> implements Bar<D> {
+public class BaseBar<D extends Num> implements Bar<D> {
 
 	private static final long serialVersionUID = 8038383777467488147L;
 
-	private final NumOperationsFactory<D> factory;
+	private final NumFactory<D> factory;
 	/** Time period (e.g. 1 day, 15 min, etc.) of the tick */
     private Duration timePeriod;
     /** End time of the tick */
@@ -61,7 +64,7 @@ public class BaseBar<D extends Value> implements Bar<D> {
      * @param timePeriod the time period
      * @param endTime the end time of the tick period
      */
-    public BaseBar(Duration timePeriod, ZonedDateTime endTime, NumOperationsFactory<D> factory) {
+    public BaseBar(Duration timePeriod, ZonedDateTime endTime, NumFactory<D> factory) {
         checkTimeArguments(timePeriod, endTime);
         this.timePeriod = timePeriod;
         this.endTime = endTime;
@@ -81,7 +84,7 @@ public class BaseBar<D extends Value> implements Bar<D> {
      * @param closePrice the close price of the tick period
      * @param volume the volume of the tick period
      */
-    public BaseBar(ZonedDateTime endTime, double openPrice, double highPrice, double lowPrice, double closePrice, double volume, NumOperationsFactory<D> factory) {
+    public BaseBar(ZonedDateTime endTime, double openPrice, double highPrice, double lowPrice, double closePrice, double volume, NumFactory<D> factory) {
         this(endTime,
                 factory.valueOf(openPrice),
                 factory.valueOf(highPrice),
@@ -92,7 +95,7 @@ public class BaseBar<D extends Value> implements Bar<D> {
     }
 
     /**
-     * Constructor.Value
+     * Constructor.num
      * @param endTime the end time of the tick period
      * @param openPrice the open price of the tick period
      * @param highPrice the highest price of the tick period
@@ -100,7 +103,7 @@ public class BaseBar<D extends Value> implements Bar<D> {
      * @param closePrice the close price of the tick period
      * @param volume the volume of the tick period
      */
-    public BaseBar(ZonedDateTime endTime, String openPrice, String highPrice, String lowPrice, String closePrice, String volume, NumOperationsFactory<D> factory) {
+    public BaseBar(ZonedDateTime endTime, String openPrice, String highPrice, String lowPrice, String closePrice, String volume, NumFactory<D> factory) {
         this(endTime, factory.valueOf(openPrice),
                 factory.valueOf(highPrice),
                 factory.valueOf(lowPrice),
@@ -117,7 +120,7 @@ public class BaseBar<D extends Value> implements Bar<D> {
      * @param closePrice the close price of the tick period
      * @param volume the volume of the tick period
      */
-    public BaseBar(ZonedDateTime endTime, D openPrice, D highPrice, D lowPrice, D closePrice, D volume, NumOperationsFactory<D> factory) {
+    public BaseBar(ZonedDateTime endTime, D openPrice, D highPrice, D lowPrice, D closePrice, D volume, NumFactory<D> factory) {
         this(Duration.ofDays(1), endTime, openPrice, highPrice, lowPrice, closePrice, volume, factory);
     }
 
@@ -131,7 +134,7 @@ public class BaseBar<D extends Value> implements Bar<D> {
      * @param closePrice the close price of the tick period
      * @param volume the volume of the tick period
      */
-    public BaseBar(Duration timePeriod, ZonedDateTime endTime, D openPrice, D highPrice, D lowPrice, D closePrice, D volume, NumOperationsFactory<D> factory) {
+    public BaseBar(Duration timePeriod, ZonedDateTime endTime, D openPrice, D highPrice, D lowPrice, D closePrice, D volume, NumFactory<D> factory) {
         this(timePeriod, endTime, openPrice, highPrice, lowPrice, closePrice, volume, factory.valueOf(0), factory);
     }
 
@@ -146,7 +149,7 @@ public class BaseBar<D extends Value> implements Bar<D> {
      * @param volume the volume of the tick period
      * @param amount the amount of the tick period
      */
-    public BaseBar(Duration timePeriod, ZonedDateTime endTime, D openPrice, D highPrice, D lowPrice, D closePrice, D volume, D amount, NumOperationsFactory<D> factory) {
+    public BaseBar(Duration timePeriod, ZonedDateTime endTime, D openPrice, D highPrice, D lowPrice, D closePrice, D volume, D amount, NumFactory<D> factory) {
         checkTimeArguments(timePeriod, endTime);
         this.timePeriod = timePeriod;
         this.endTime = endTime;
@@ -240,7 +243,7 @@ public class BaseBar<D extends Value> implements Bar<D> {
 
 
     /**    @Override
-    public void addTrade(Value tradeVolume, Value tradePrice) {
+    public void addTrade(num tradeVolume, num tradePrice) {
 
     }
      * Adds a trade at the end of tick period.

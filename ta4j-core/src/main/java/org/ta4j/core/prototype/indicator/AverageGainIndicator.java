@@ -20,31 +20,34 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.prototype.indicator;
 
 
-import java.io.Serializable;
+import org.ta4j.core.prototype.indicator.CachedIndicator;
+import org.ta4j.core.prototype.indicator.CumulatedGainsIndicator;
+import org.ta4j.core.prototype.indicator.Indicator;
+import org.ta4j.core.prototype.num.Num;
+import org.ta4j.core.prototype.num.NumFactory;
 
 /**
- * Indicator over a {@link TimeSeries time series}.
+ * Average gain indicator.
  * <p></p>
- * For each index of the time series, returns a value of type <b>T</b>.
- * @param <T> the type of returned value (Double, Boolean, etc.)
  */
-public interface Indicator<T extends Value> extends Serializable {
+public class AverageGainIndicator extends CachedIndicator<Num> {
 
-    /**
-     * @param index the tick index
-     * @return the value of the indicator
-     */
-    T getValue(int index);
+    private final CumulatedGainsIndicator cumulatedGains;
+    private final NumFactory<Num> numFa = getNumFactory();
+    private final int timeFrame;
 
-    /**
-     * @return the related time series
-     */
-    TimeSeries<T> getTimeSeries();
+    public AverageGainIndicator(Indicator<Num> indicator, int timeFrame) {
+        super(indicator);
+        this.cumulatedGains = new CumulatedGainsIndicator(indicator, timeFrame);
+        this.timeFrame = timeFrame;
+    }
 
-    NumOperationsFactory<T> getNumFactory();
-
-
+    @Override
+    protected Num calculate(int index) {
+        final int realTimeFrame = Math.min(timeFrame, index + 1);
+        return cumulatedGains.getValue(index).dividedBy(numFa.valueOf(realTimeFrame));
+    }
 }

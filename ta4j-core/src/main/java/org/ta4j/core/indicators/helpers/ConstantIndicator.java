@@ -44,6 +44,6 @@ public class ConstantIndicator<T> extends AbstractIndicator<T> {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " Value: " + value;
+        return getClass().getSimpleName() + " num: " + value;
     }
 }

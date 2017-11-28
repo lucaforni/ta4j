@@ -1,6 +1,8 @@
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.prototype;
 
 import org.ta4j.core.Tick;
+import org.ta4j.core.prototype.num.Num;
+import org.ta4j.core.prototype.num.NumFactory;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -10,10 +12,10 @@ import java.util.List;
 /**
  * Time series interface
  */
-public interface TimeSeries<D extends Value> {
+public interface TimeSeries<D extends Num> {
 
 
-    NumOperationsFactory<D> getNumOperationsFactory();
+    NumFactory<D> getNumFactory();
     public D getOpenPrice(int index);
     public D getMinPrice(int index);
     public D getMaxPrice(int index);
@@ -101,22 +103,6 @@ public interface TimeSeries<D extends Value> {
     }
 
     /**
-     * Sets the maximum number of ticks that will be retained in the series.
-     * <p>
-     * If a new tick is added to the series such that the number of ticks will exceed the maximum tick count,
-     * then the FIRST tick in the series is automatically removed, ensuring that the maximum tick count is not exceeded.
-     * @param maximumTickCount the maximum tick count
-     * @deprecated use Constructor to specify if there should be a maximum tick count (isWindow = true)
-     */
-    void setMaximumBarCount(int maximumTickCount);
-
-    /**
-     * @return the maximum number of ticks
-     * @deprecated use getWindowSize()
-     */
-    int getMaximumBarCount();
-
-    /**
      * @return the number of removed ticks
      */
     int getRemovedBarCount();
@@ -132,4 +118,11 @@ public interface TimeSeries<D extends Value> {
      * @deprecated use the addBar(..., ..., ...) function to add direct tick data to the time series
      */
     void addBar(Bar<D> bar);
+
+    /**
+     *
+     */
+    default int getMaximumBarCount(){
+        return Integer.MAX_VALUE;
+    }
 }

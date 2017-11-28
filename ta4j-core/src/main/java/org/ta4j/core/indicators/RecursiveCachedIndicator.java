@@ -30,7 +30,7 @@ import org.ta4j.core.TimeSeries;
  * <p></p>
  * Recursive indicators should extend this class.<br>
  * This class is only here to avoid (OK, to postpone) the StackOverflowError that
- * may be thrown on the first getValue(int) call of a recursive indicator.
+ * may be thrown on the first getDelegate(int) call of a recursive indicator.
  * Concretely when an index value is asked, if the last cached value is too old/far,
  * the computation of all the values between the last cached and the asked one
  * is executed iteratively.

@@ -146,7 +146,7 @@ public class CachedIndicatorTest {
     @Test
     public void recursiveCachedIndicatorOnMovingTimeSeriesShouldNotCauseStackOverflow() {
         // Added to check issue #120: https://github.com/mdeverdelhan/ta4j/issues/120
-        // See also: CachedIndicator#getValue(int index)
+        // See also: CachedIndicator#getDelegate(int index)
         series = new MockTimeSeries();
         series.setMaximumTickCount(5);
         assertEquals(5, series.getTickCount());

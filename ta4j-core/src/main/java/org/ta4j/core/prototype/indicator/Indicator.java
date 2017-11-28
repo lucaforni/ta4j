@@ -20,34 +20,35 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.prototype.indicator;
 
+
+import org.ta4j.core.prototype.TimeSeries;
+import org.ta4j.core.prototype.num.Num;
+import org.ta4j.core.prototype.num.NumFactory;
+
+import java.io.Serializable;
 
 /**
- * Cumulated losses indicator.
+ * Indicator over a {@link TimeSeries time series}.
  * <p></p>
+ * For each index of the time series, returns a value of type <b>T</b>.
+ * @param <T> the type of returned value (Double, Boolean, etc.)
  */
-public class CumulatedLossesIndicator extends CachedIndicator<Value> {
+public interface Indicator<T extends Num> extends Serializable {
 
-    private final Indicator<Value> indicator;
+    /**
+     * @param index the tick index
+     * @return the value of the indicator
+     */
+    T getValue(int index);
 
-    private final int timeFrame;
-    private final NumOperationsFactory<Value> num = getNumFactory();
+    /**
+     * @return the related time series
+     */
+    TimeSeries<T> getTimeSeries();
 
-    public CumulatedLossesIndicator(Indicator<Value> indicator, int timeFrame) {
-        super(indicator);
-        this.indicator = indicator;
-        this.timeFrame = timeFrame;
-    }
+    NumFactory<T> getNumFactory();
 
-    @Override
-    protected Value calculate(int index) {
-        Value sumOfLosses = num.valueOf(0);
-        for (int i = Math.max(1, index - timeFrame + 1); i <= index; i++) {
-            if (indicator.getValue(i).isLessThan(indicator.getValue(i - 1))) {
-                sumOfLosses = sumOfLosses.plus(indicator.getValue(i - 1).minus(indicator.getValue(i)));
-            }
-        }
-        return sumOfLosses;
-    }
+
 }

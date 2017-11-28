@@ -103,7 +103,7 @@ public class FisherIndicator extends RecursiveCachedIndicator<Decimal>{
         if (index <= 0) {
             return Decimal.ZERO;
         }
-        //Fish = 0.5 * MathLog((1 + Value) / (1 - Value)) + 0.5 * Fish1
+        //Fish = 0.5 * MathLog((1 + num) / (1 - num)) + 0.5 * Fish1
         Decimal value = intermediateValue.getValue(index);
         Decimal ext = Decimal.ONE.plus(value).dividedBy(Decimal.ONE.minus(value)).log();
         return ext.plus(getValue(index - 1)).dividedBy(Decimal.TWO);

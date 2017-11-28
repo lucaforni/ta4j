@@ -20,9 +20,13 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.prototype.indicator;
 
 
+
+import org.ta4j.core.prototype.AbstractIndicator;
+import org.ta4j.core.prototype.TimeSeries;
+import org.ta4j.core.prototype.num.Num;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +37,7 @@ import java.util.List;
  * <p></p>
  * Caches the constructor of the indicator. Avoid to calculate the same index of the indicator twice.
  */
-public abstract class CachedIndicator<T extends Value> extends AbstractIndicator<T> {
+public abstract class CachedIndicator<T extends Num> extends AbstractIndicator<T> {
 
     /** List of cached results */
     private final List<T> results = new ArrayList<T>();

@@ -1,7 +1,4 @@
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface.value_types;
-
-import org.ta4j.core.columnar_timeSeries_and_decimal_interface.Value;
-import org.ta4j.core.columnar_timeSeries_and_decimal_interface.NumOperationsFactory;
+package org.ta4j.core.prototype.num;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -9,15 +6,15 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 /**
- * Immutable, arbitrary-precision signed columnar_timeSeries_and_decimal_interface numbers designed for technical analysis.
+ * Immutable, arbitrary-precision signed prototype numbers designed for technical analysis.
  * <p></p>
- * A {@code Value} consists of a {@code BigDecimal} with arbitrary {@link MathContext} (precision and rounding mode).
+ * A {@code num} consists of a {@code BigDecimal} with arbitrary {@link MathContext} (precision and rounding mode).
  *
  * @see BigDecimal
  * @see MathContext
  * @see RoundingMode
  */
-public final class BaseDecimal implements Value<BigDecimal> {
+public final class BigDecimalNum implements Num<BigDecimal> {
 
     private static final long serialVersionUID = 2225130444465033658L;
 
@@ -25,71 +22,71 @@ public final class BaseDecimal implements Value<BigDecimal> {
 
     private final BigDecimal delegate;
 
-    public static final NumOperationsFactory<BaseDecimal> NUM_OPERATIONS_FACTORY = new NumOperationsFactory<BaseDecimal>() {
+    public static final NumFactory<BigDecimalNum> NUM_OPERATIONS_FACTORY = new NumFactory<BigDecimalNum>() {
         @Override
-        public BaseDecimal ZERO() {
-            return new BaseDecimal(0);
+        public BigDecimalNum ZERO() {
+            return new BigDecimalNum(0);
         }
 
         @Override
-        public BaseDecimal ONE() {
-            return new BaseDecimal(1);
+        public BigDecimalNum ONE() {
+            return new BigDecimalNum(1);
         }
 
         @Override
-        public BaseDecimal TWO() {
-            return new BaseDecimal(2);
+        public BigDecimalNum TWO() {
+            return new BigDecimalNum(2);
         }
 
         @Override
-        public BaseDecimal THREE() {
-            return new BaseDecimal(3);
+        public BigDecimalNum THREE() {
+            return new BigDecimalNum(3);
         }
 
         @Override
-        public BaseDecimal TEN() { return new BaseDecimal(10); }
+        public BigDecimalNum TEN() { return new BigDecimalNum(10); }
 
         @Override
-        public BaseDecimal HUNDRED() {
-            return new BaseDecimal(100);
+        public BigDecimalNum HUNDRED() {
+            return new BigDecimalNum(100);
         }
 
         @Override
-        public BaseDecimal THOUSAND() {
-            return new BaseDecimal(1000);
+        public BigDecimalNum THOUSAND() {
+            return new BigDecimalNum(1000);
         }
 
         @Override
-        public Value NaN() {
-            return Value.NaN;
+        public Num NaN() {
+            return Num.NaN;
         }
 
         @Override
-        public BaseDecimal valueOf(double val) {
-            return new BaseDecimal(val);
+        public BigDecimalNum valueOf(double val) {
+            return new BigDecimalNum(val);
         }
 
         @Override
-        public BaseDecimal valueOf(int val) {
-            return new BaseDecimal(val);
+        public BigDecimalNum valueOf(int val) {
+            return new BigDecimalNum(val);
         }
 
         @Override
-        public BaseDecimal valueOf(long val) {
-            return new BaseDecimal(val);
+        public BigDecimalNum valueOf(long val) {
+            return new BigDecimalNum(val);
         }
 
         @Override
-        public BaseDecimal valueOf(String val) {
-            return new BaseDecimal(val);
+        public BigDecimalNum valueOf(String val) {
+            return new BigDecimalNum(val);
         }
     };
 
     /**
      * Constructor.
-     * @param val the string representation of the columnar_timeSeries_and_decimal_interface value
+     * @param val the string representation of the prototype value
      */
-    private BaseDecimal(String val) {
+    private BigDecimalNum(String val) {
         delegate = new BigDecimal(val, MATH_CONTEXT);
     }
 
@@ -97,174 +94,179 @@ public final class BaseDecimal implements Value<BigDecimal> {
      * Constructor.
      * @param val the double value
      */
-    private BaseDecimal(double val) {
+    private BigDecimalNum(double val) {
         delegate = new BigDecimal(val, MATH_CONTEXT);
     }
 
-    private BaseDecimal(int val) {
+    private BigDecimalNum(int val) {
         delegate = new BigDecimal(val, MATH_CONTEXT);
     }
 
-    private BaseDecimal(long val) {
+    private BigDecimalNum(long val) {
         delegate = new BigDecimal(val, MATH_CONTEXT);
     }
 
-    private BaseDecimal(BigDecimal val) {
+    private BigDecimalNum(BigDecimal val) {
         delegate = val;
     }
 
 
     @Override
-    public BigDecimal getValue() {
+    public NumFactory getFactory() {
+        return NUM_OPERATIONS_FACTORY;
+    }
+
+    @Override
+    public BigDecimal getDelegate() {
         return delegate;
     }
 
     @Override
     public String getName() {
-        return "BaseDecimal";
+        return "BigDecimalNum";
     }
 
     /**
-     * Returns a {@code Value} whose value is {@code (this + augend)},
+     * Returns a {@code num} whose value is {@code (this + augend)},
      * with rounding according to the context settings.
-     * @param augend value to be added to this {@code Value}.
+     * @param augend value to be added to this {@code num}.
      * @return {@code this + augend}, rounded as necessary
      * @see BigDecimal#add(java.math.BigDecimal, java.math.MathContext)
      */
-    public Value plus(Value augend) {
-        if(!(augend instanceof BaseDecimal)){
-            throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
+    public Num plus(Num augend) {
+        if(!(augend instanceof BigDecimalNum)){
+            throw new IllegalArgumentException("Instance of BigDecimalNum is needed!");
         }
-        if ((this == Value.NaN) || (augend == NaN)) {
+        if ((this == Num.NaN) || (augend == NaN)) {
             return NaN;
         }
-        final BaseDecimal baseReplicant = (BaseDecimal) augend;
-        return new BaseDecimal(delegate.add(baseReplicant.delegate, MATH_CONTEXT));
+        final BigDecimalNum baseReplicant = (BigDecimalNum) augend;
+        return new BigDecimalNum(delegate.add(baseReplicant.delegate, MATH_CONTEXT));
     }
     /**
-     * Returns a {@code Value} whose value is {@code (this - augend)},
+     * Returns a {@code num} whose value is {@code (this - augend)},
      * with rounding according to the context settings.
-     * @param subtrahend value to be subtracted from this {@code Value}.
+     * @param subtrahend value to be subtracted from this {@code num}.
      * @return {@code this - subtrahend}, rounded as necessary
      * @see BigDecimal#subtract(java.math.BigDecimal, java.math.MathContext)
      */
-    public Value minus(Value subtrahend) {
-        if(!(subtrahend instanceof BaseDecimal)){
-            throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
+    public Num minus(Num subtrahend) {
+        if(!(subtrahend instanceof BigDecimalNum)){
+            throw new IllegalArgumentException("Instance of BigDecimalNum is needed!");
         }
         if ((this == NaN) || (subtrahend == NaN)) {
             return NaN;
         }
-        final BaseDecimal baseReplicant = (BaseDecimal) subtrahend;
-        return new BaseDecimal(delegate.subtract(baseReplicant.delegate, MATH_CONTEXT));
+        final BigDecimalNum baseReplicant = (BigDecimalNum) subtrahend;
+        return new BigDecimalNum(delegate.subtract(baseReplicant.delegate, MATH_CONTEXT));
     }
 
     /**
-     * Returns a {@code Value} whose value is {@code this * multiplicand},
+     * Returns a {@code num} whose value is {@code this * multiplicand},
      * with rounding according to the context settings.
-     * @param multiplicand value to be multiplied by this {@code Value}.
+     * @param multiplicand value to be multiplied by this {@code num}.
      * @return {@code this * multiplicand}, rounded as necessary
      * @see BigDecimal#multiply(java.math.BigDecimal, java.math.MathContext)
      */
-    public Value multipliedBy(Value multiplicand) {
-        if(!(multiplicand instanceof BaseDecimal)){
-            throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
+    public Num multipliedBy(Num multiplicand) {
+        if(!(multiplicand instanceof BigDecimalNum)){
+            throw new IllegalArgumentException("Instance of BigDecimalNum is needed!");
         }
         if ((this == NaN) || (multiplicand == NaN)) {
             return NaN;
         }
-        final BaseDecimal baseReplicant = (BaseDecimal) multiplicand;
-        return new BaseDecimal(delegate.multiply(baseReplicant.delegate, MATH_CONTEXT));
+        final BigDecimalNum baseReplicant = (BigDecimalNum) multiplicand;
+        return new BigDecimalNum(delegate.multiply(baseReplicant.delegate, MATH_CONTEXT));
     }
 
     /**
-     * Returns a {@code Value} whose value is {@code (this / divisor)},
+     * Returns a {@code num} whose value is {@code (this / divisor)},
      * with rounding according to the context settings.
-     * @param divisor value by which this {@code Value} is to be divided.
+     * @param divisor value by which this {@code num} is to be divided.
      * @return {@code this / divisor}, rounded as necessary
      * @see BigDecimal#divide(java.math.BigDecimal, java.math.MathContext)
      */
-    public Value dividedBy(Value divisor) {
-        if(!(divisor instanceof BaseDecimal)){
-            throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
+    public Num dividedBy(Num divisor) {
+        if(!(divisor instanceof BigDecimalNum)){
+            throw new IllegalArgumentException("Instance of BigDecimalNum is needed!");
         }
         if ((this == NaN) || (divisor == NaN) || divisor.isZero()) {
             return NaN;
         }
 
-        final BaseDecimal baseDivisor = (BaseDecimal) divisor;
-        return new BaseDecimal(delegate.divide(baseDivisor.delegate, MATH_CONTEXT));
+        final BigDecimalNum baseDivisor = (BigDecimalNum) divisor;
+        return new BigDecimalNum(delegate.divide(baseDivisor.delegate, MATH_CONTEXT));
     }
 
     /**
-     * Returns a {@code Value} whose value is {@code (this % divisor)},
+     * Returns a {@code num} whose value is {@code (this % divisor)},
      * with rounding according to the context settings.
-     * @param divisor value by which this {@code Value} is to be divided.
+     * @param divisor value by which this {@code num} is to be divided.
      * @return {@code this % divisor}, rounded as necessary.
      * @see BigDecimal#remainder(java.math.BigDecimal, java.math.MathContext)
      */
-    public Value remainder(Value divisor) {
-        if(!(divisor instanceof BaseDecimal)){
-            throw new IllegalArgumentException("Instance of BaseDecimal is needed!");
+    public Num remainder(Num divisor) {
+        if(!(divisor instanceof BigDecimalNum)){
+            throw new IllegalArgumentException("Instance of BigDecimalNum is needed!");
         }
         if ((this == NaN) || (divisor == NaN) || divisor.isZero()) {
             return NaN;
         }
 
-        BaseDecimal baseDivisor = (BaseDecimal) divisor;
-        return new BaseDecimal(delegate.remainder(baseDivisor.delegate, MATH_CONTEXT));
+        BigDecimalNum baseDivisor = (BigDecimalNum) divisor;
+        return new BigDecimalNum(delegate.remainder(baseDivisor.delegate, MATH_CONTEXT));
     }
 
 
     /**
-     * Returns a {@code Value} whose value is <tt>(this<sup>n</sup>)</tt>.
-     * @param n power to raise this {@code Value} to.
+     * Returns a {@code num} whose value is <tt>(this<sup>n</sup>)</tt>.
+     * @param n power to raise this {@code num} to.
      * @return <tt>this<sup>n</sup></tt>
      * @see BigDecimal#pow(int, java.math.MathContext)
      */
-    public Value pow(int n) {
+    public Num pow(int n) {
         if (this == NaN) {
             return NaN;
         }
-        return new BaseDecimal(delegate.pow(n, MATH_CONTEXT));
+        return new BigDecimalNum(delegate.pow(n, MATH_CONTEXT));
     }
 
     /**
-     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code Value}.
+     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code num}.
      * /!\ Warning! Uses the {@code StrictMath#log(double)} method under the hood.
      * @return the natural logarithm (base e) of {@code this}
      * @see StrictMath#log(double)
      */
-    public Value log() {
+    public Num log() {
         if (this == NaN) {
             return NaN;
         }
-        return new BaseDecimal(StrictMath.log(delegate.doubleValue()));
+        return new BigDecimalNum(StrictMath.log(delegate.doubleValue()));
     }
 
     /**
-     * Returns the correctly rounded positive square root of the <code>double</code> value of this {@code Value}.
+     * Returns the correctly rounded positive square root of the <code>double</code> value of this {@code num}.
      * /!\ Warning! Uses the {@code StrictMath#sqrt(double)} method under the hood.
      * @return the positive square root of {@code this}
      * @see StrictMath#sqrt(double)
      */
-    public Value sqrt() {
+    public Num sqrt() {
         if (this == NaN) {
             return NaN;
         }
-        return new BaseDecimal(StrictMath.sqrt(delegate.doubleValue()));
+        return new BigDecimalNum(StrictMath.sqrt(delegate.doubleValue()));
     }
 
     /**
-     * Returns a {@code Value} whose value is the absolute value
-     * of this {@code Value}.
+     * Returns a {@code num} whose value is the absolute value
+     * of this {@code num}.
      * @return {@code abs(this)}
      */
-    public Value abs() {
+    public Num abs() {
         if (this == NaN) {
             return NaN;
         }
-        return new BaseDecimal(delegate.abs());
+        return new BigDecimalNum(delegate.abs());
     }
 
     /**
@@ -335,7 +337,7 @@ public final class BaseDecimal implements Value<BigDecimal> {
      * @param other the other value, not null
      * @return true is this is greater than the specified value, false otherwise
      */
-    public boolean isEqual(Value other) {
+    public boolean isEqual(Num other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -347,7 +349,7 @@ public final class BaseDecimal implements Value<BigDecimal> {
      * @param other the other value, not null
      * @return true is this is greater than the specified value, false otherwise
      */
-    public boolean isGreaterThan(Value other) {
+    public boolean isGreaterThan(Num other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -359,7 +361,7 @@ public final class BaseDecimal implements Value<BigDecimal> {
      * @param other the other value, not null
      * @return true is this is greater than or equal to the specified value, false otherwise
      */
-    public boolean isGreaterThanOrEqual(Value other) {
+    public boolean isGreaterThanOrEqual(Num other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -371,7 +373,7 @@ public final class BaseDecimal implements Value<BigDecimal> {
      * @param other the other value, not null
      * @return true is this is less than the specified value, false otherwise
      */
-    public boolean isLessThan(Value other) {
+    public boolean isLessThan(Num other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -383,7 +385,7 @@ public final class BaseDecimal implements Value<BigDecimal> {
      * @param other the other value, not null
      * @return true is this is less than or equal to the specified value, false otherwise
      */
-    public boolean isLessThanOrEqual(Value other) {
+    public boolean isLessThanOrEqual(Num other) {
         if ((this == NaN) || (other == NaN)) {
             return false;
         }
@@ -396,10 +398,10 @@ public final class BaseDecimal implements Value<BigDecimal> {
      * @param other value with which the minimum is to be computed
      * @return the {@code Decimal} whose value is the lesser of this
      *         {@code Decimal} and {@code other}.  If they are equal,
-     *         as defined by the {@link #compareTo(Value) compareTo}
+     *         as defined by the {@link #compareTo(Num) compareTo}
      *         method, {@code this} is returned.
      */
-    public Value min(Value other) {
+    public Num min(Num other) {
         if ((this == NaN) || (other == NaN)) {
             return NaN;
         }
@@ -411,10 +413,10 @@ public final class BaseDecimal implements Value<BigDecimal> {
      * @param  other value with which the maximum is to be computed
      * @return the {@code Decimal} whose value is the greater of this
      *         {@code Decimal} and {@code other}.  If they are equal,
-     *         as defined by the {@link #compareTo(Value) compareTo}
+     *         as defined by the {@link #compareTo(Num) compareTo}
      *         method, {@code this} is returned.
      */
-    public Value max(Value other) {
+    public Num max(Num other) {
         if ((this == NaN) || (other == NaN)) {
             return NaN;
         }
@@ -422,8 +424,8 @@ public final class BaseDecimal implements Value<BigDecimal> {
     }
 
     /**
-     * Converts this {@code Value} to a {@code double}.
-     * @return this {@code Value} converted to a {@code double}
+     * Converts this {@code num} to a {@code double}.
+     * @return this {@code num} converted to a {@code double}
      * @see BigDecimal#doubleValue()
      */
     public double toDouble() {
@@ -455,13 +457,13 @@ public final class BaseDecimal implements Value<BigDecimal> {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Value)) {
+        if (!(obj instanceof Num)) {
             return false;
         }
-        if(!(obj instanceof BaseDecimal)){
+        if(!(obj instanceof BigDecimalNum)){
             return false;
         }
-        final BaseDecimal other = (BaseDecimal) obj;
+        final BigDecimalNum other = (BigDecimalNum) obj;
         if (this.delegate != other.delegate
                 && (this.delegate == null || (this.delegate.compareTo(other.delegate) != 0))) {
             return false;
@@ -471,18 +473,18 @@ public final class BaseDecimal implements Value<BigDecimal> {
 
 
     @Override
-    public int compareTo(Value other) {
-        if(!(other instanceof BaseDecimal)) {
-            throw new IllegalArgumentException("Must be an BaseDecimal!");
+    public int compareTo(Num other) {
+        if(!(other instanceof BigDecimalNum)) {
+            throw new IllegalArgumentException("Must be an BigDecimalNum!");
         }
-        final BaseDecimal baseOther = (BaseDecimal) other;
+        final BigDecimalNum baseOther = (BigDecimalNum) other;
         if ((this == NaN) || (baseOther == NaN)) {
             return 0;
         }
         return delegate.compareTo(baseOther.delegate);
     }
 
-    public static BaseDecimal valueOf(double val){
-        return new BaseDecimal(val);
+    public static BigDecimalNum valueOf(double val){
+        return new BigDecimalNum(val);
     }
 }

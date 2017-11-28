@@ -20,28 +20,37 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.prototype.indicator;
 
+
+import org.ta4j.core.prototype.num.Num;
+import org.ta4j.core.prototype.num.NumFactory;
 
 /**
- * Average loss indicator.
+ * Cumulated losses indicator.
  * <p></p>
  */
-public class AverageLossIndicator extends CachedIndicator<Value> {
+public class CumulatedLossesIndicator extends CachedIndicator<Num> {
 
-    private final CumulatedLossesIndicator cumulatedLosses;
-    private final NumOperationsFactory<Value> numFa = getNumFactory();
+    private final Indicator<Num> indicator;
+
     private final int timeFrame;
+    private final NumFactory<Num> num = getNumFactory();
 
-    public AverageLossIndicator(Indicator<Value> indicator, int timeFrame) {
+    public CumulatedLossesIndicator(Indicator<Num> indicator, int timeFrame) {
         super(indicator);
-        this.cumulatedLosses = new CumulatedLossesIndicator(indicator, timeFrame);
+        this.indicator = indicator;
         this.timeFrame = timeFrame;
     }
 
     @Override
-    protected Value calculate(int index) {
-        final int realTimeFrame = Math.min(timeFrame, index + 1);
-        return cumulatedLosses.getValue(index).dividedBy(numFa.valueOf(realTimeFrame));
+    protected Num calculate(int index) {
+        Num sumOfLosses = num.valueOf(0);
+        for (int i = Math.max(1, index - timeFrame + 1); i <= index; i++) {
+            if (indicator.getValue(i).isLessThan(indicator.getValue(i - 1))) {
+                sumOfLosses = sumOfLosses.plus(indicator.getValue(i - 1).minus(indicator.getValue(i)));
+            }
+        }
+        return sumOfLosses;
     }
 }

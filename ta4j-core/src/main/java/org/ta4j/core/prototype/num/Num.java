@@ -20,84 +20,97 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
-
-import org.ta4j.core.columnar_timeSeries_and_decimal_interface.value_types.BaseDecimal;
-import org.ta4j.core.columnar_timeSeries_and_decimal_interface.value_types.LongDecimal;
+package org.ta4j.core.prototype.num;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * @param <D> the delegate of the class that implements Value
- *              See {@link LongDecimal} -> delegate {@link org.decimal4j.immutable.Decimal10f}
- *              See {@link BaseDecimal} -> delegate {@link BigDecimal}
+ * @param <D> the delegate of the class that implements num
+ *              See {@link Decimal10fNum Decimal10fNum} -> delegate: {@link org.decimal4j.immutable.Decimal10f Decimal10f}
+ *              See {@link BigDecimalNum BigDecimalNum} -> delegate: {@link BigDecimal BigDecimal}
+ *              See {@link org.ta4j.core.prototype.num.DoubleNum DoubleNum}   -> delegate: Double
  *
- * @See {@link NumOperationsFactory<D>}
+ * @See {@link NumFactory <D>}
  */
-public interface Value<D extends Number> extends Serializable, Comparable<Value> {
+public interface Num<D extends Number> extends Serializable, Comparable<Num> {
 
 
-    static final Value NaN = null;
+    static final Num NaN = null;
 
-    D getValue();
-
-    String getName();
     /**
-     * Returns a {@code Value} whose value is {@code (this + augend)},
-     * @param augend value to be added to this {@code Value}.
+     * Get a 'Factory' for the underlying delegate type
+     * @return NumFactory object (for using valueOf transformations)
+     */
+    NumFactory getFactory();
+
+    /**
+     * Get the delegate of the num implementation
+     * @return the delegate value
+     */
+    D getDelegate();
+
+    /**
+     * Get the name of the num implementation
+     * @return name of the num implementation
+     */
+    String getName();
+
+    /**
+     * Returns a {@code num} whose value is {@code (this + augend)},
+     * @param augend value to be added to this {@code num}.
      * @return {@code this + augend}, rounded as necessary
      */
-     Value plus(Value augend);
+     Num plus(Num augend);
 
     /**
-     * Returns a {@code Value} whose value is {@code (this - augend)},
-     * @param subtrahend value to be subtracted from this {@code Value}.
+     * Returns a {@code num} whose value is {@code (this - augend)},
+     * @param subtrahend value to be subtracted from this {@code num}.
      * @return {@code this - subtrahend}, rounded as necessary
      */
-    Value minus(Value subtrahend);
+    Num minus(Num subtrahend);
 
     /**
-     * Returns a {@code Value} whose value is {@code this * multiplicand},
-     * @param multiplicand value to be multiplied by this {@code Value}.
+     * Returns a {@code num} whose value is {@code this * multiplicand},
+     * @param multiplicand value to be multiplied by this {@code num}.
      * @return {@code this * multiplicand}, rounded as necessary
      */
-    Value multipliedBy(Value multiplicand);
+    Num multipliedBy(Num multiplicand);
 
     /**
-     * Returns a {@code Value} whose value is {@code (this / divisor)},
-     * @param divisor value by which this {@code Value} is to be divided.
+     * Returns a {@code num} whose value is {@code (this / divisor)},
+     * @param divisor value by which this {@code num} is to be divided.
      * @return {@code this / divisor}, rounded as necessary
      */
-    Value dividedBy(Value divisor);
+    Num dividedBy(Num divisor);
 
     /**
-     * Returns a {@code Value} whose value is {@code (this % divisor)},
-     * @param divisor value by which this {@code Value} is to be divided.
+     * Returns a {@code num} whose value is {@code (this % divisor)},
+     * @param divisor value by which this {@code num} is to be divided.
      * @return {@code this % divisor}, rounded as necessary.
      */
-    Value remainder(Value divisor);
+    Num remainder(Num divisor);
 
     /**
-     * Returns a {@code Value} whose value is <tt>(this<sup>n</sup>)</tt>.
-     * @param n power to raise this {@code Value} to.
+     * Returns a {@code num} whose value is <tt>(this<sup>n</sup>)</tt>.
+     * @param n power to raise this {@code num} to.
      * @return <tt>this<sup>n</sup></tt>
      */
-    Value pow(int n);
+    Num pow(int n);
 
     /**
-     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code Value}.
+     * Returns the correctly rounded natural logarithm (base e) of the <code>double</code> value of this {@code num}.
      * @return the natural logarithm (base e) of {@code this}
      * @see StrictMath#log(double)
      */
-    Value log();
+    Num log();
 
     /**
-     * Returns a {@code Value} whose value is the absolute value
-     * of this {@code Value}.
+     * Returns a {@code num} whose value is the absolute value
+     * of this {@code num}.
      * @return {@code abs(this)}
      */
-    Value abs();
+    Num abs();
 
     /**
      * Checks if the value is zero.
@@ -134,57 +147,57 @@ public interface Value<D extends Number> extends Serializable, Comparable<Value>
      * @param other the other value, not null
      * @return true is this is greater than the specified value, false otherwise
      */
-    boolean isEqual(Value other);
+    boolean isEqual(Num other);
 
     /**
      * Checks if this value is greater than another.
      * @param other the other value, not null
      * @return true is this is greater than the specified value, false otherwise
      */
-    boolean isGreaterThan(Value other);
+    boolean isGreaterThan(Num other);
 
     /**
      * Checks if this value is greater than or equal to another.
      * @param other the other value, not null
      * @return true is this is greater than or equal to the specified value, false otherwise
      */
-    boolean isGreaterThanOrEqual(Value other);
+    boolean isGreaterThanOrEqual(Num other);
 
     /**
      * Checks if this value is less than another.
      * @param other the other value, not null
      * @return true is this is less than the specified value, false otherwise
      */
-    boolean isLessThan(Value other);
+    boolean isLessThan(Num other);
 
     /**
      * Checks if this value is less than another.
      * @param other the other value, not null
      * @return true is this is less than or equal the specified value, false otherwise
      */
-    boolean isLessThanOrEqual(Value other);
+    boolean isLessThanOrEqual(Num other);
 
     /**
-     * Returns the minimum of this {@code Value} and {@code other}.
+     * Returns the minimum of this {@code num} and {@code other}.
      * @param other value with which the minimum is to be computed
-     * @return the {@code Value} whose value is the lesser of this
-     *         {@code Value} and {@code other}.  If they are equal,
+     * @return the {@code num} whose value is the lesser of this
+     *         {@code num} and {@code other}.  If they are equal,
      *         method, {@code this} is returned.
      */
-    Value min(Value other);
+    Num min(Num other);
 
     /**
-     * Returns the maximum of this {@code Value} and {@code other}.
+     * Returns the maximum of this {@code num} and {@code other}.
      * @param  other value with which the maximum is to be computed
-     * @return the {@code Value} whose value is the greater of this
-     *         {@code Value} and {@code other}.  If they are equal,
+     * @return the {@code num} whose value is the greater of this
+     *         {@code num} and {@code other}.  If they are equal,
      *         method, {@code this} is returned.
      */
-    Value max(Value other);
+    Num max(Num other);
 
     /**
-     * Converts this {@code Value} to a {@code double}.
-     * @return this {@code Value} converted to a {@code double}
+     * Converts this {@code num} to a {@code double}.
+     * @return this {@code num} converted to a {@code double}
      * @see BigDecimal#doubleValue()
      */
     double toDouble();

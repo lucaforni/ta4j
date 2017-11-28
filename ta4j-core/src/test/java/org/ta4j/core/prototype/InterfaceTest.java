@@ -1,17 +1,20 @@
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.prototype;
 import org.junit.Test;
 import org.ta4j.core.Decimal;
 import org.ta4j.core.Tick;
-import org.ta4j.core.columnar_timeSeries_and_decimal_interface.value_types.BaseDecimal;
-import org.ta4j.core.columnar_timeSeries_and_decimal_interface.value_types.DoubleDecimal;
-import org.ta4j.core.columnar_timeSeries_and_decimal_interface.value_types.LongDecimal;
+import org.ta4j.core.prototype.indicator.ClosePriceIndicator;
+import org.ta4j.core.prototype.indicator.SMAIndicator;
+import org.ta4j.core.prototype.num.*;
 import org.ta4j.core.mocks.MockTick;
 
-import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.ta4j.core.prototype.TimeSeriesFactory.delegate.BigDecimal;
+import static org.ta4j.core.prototype.TimeSeriesFactory.delegate.Decimal10f;
+
 
 public class InterfaceTest {
 
@@ -20,14 +23,14 @@ public class InterfaceTest {
     public void canDeclareAndInit() {
 
         // declare and initialize empty time series of two different types
-        BaseTimeSeries<LongDecimal> longDecimalBase = new BaseTimeSeries<>(LongDecimal.NUM_OPERATIONS_FACTORY);
-        BaseTimeSeries<BaseDecimal> baseDecimalBase = new BaseTimeSeries<>(BaseDecimal.NUM_OPERATIONS_FACTORY);
+        ColumnarTimeSeries decimal10fBase = TimeSeriesFactory.create(Decimal10f);
+        ColumnarTimeSeries bigDecimalBase = TimeSeriesFactory.create(BigDecimal);
 
         // declare and initialize indicators on the time series
-        ClosePriceIndicator closePriceIndicator = new ClosePriceIndicator(baseDecimalBase);
+        ClosePriceIndicator closePriceIndicator = new ClosePriceIndicator(bigDecimalBase);
         SMAIndicator smaIndicator = new SMAIndicator(closePriceIndicator, 10);
 
-        ClosePriceIndicator closePriceIndicatorLong = new ClosePriceIndicator(longDecimalBase);
+        ClosePriceIndicator closePriceIndicatorLong = new ClosePriceIndicator(decimal10fBase);
         SMAIndicator smaIndicatorLong = new SMAIndicator(closePriceIndicator, 10);
     }
 
@@ -40,23 +43,26 @@ public class InterfaceTest {
         List<Tick> inputOld = getTickInput(capacity);
         org.ta4j.core.TimeSeries oldTimeSeries = new org.ta4j.core.BaseTimeSeries(inputOld);
 
-        // LongDecimal -> works with Decimal5f
-        List<Bar<LongDecimal>> input = getBarInput(capacity, LongDecimal.NUM_OPERATIONS_FACTORY);
-        BaseTimeSeries<LongDecimal> longDecimalBase = new BaseTimeSeries<>(input, LongDecimal.NUM_OPERATIONS_FACTORY);
+        // Decimal10fNum -> works with Decimal5f
+        List<Bar<Decimal10fNum>> input = getBarInput(capacity, Decimal10fNum.NUM_OPERATIONS_FACTORY);
+        ColumnarTimeSeries<Decimal10fNum> longDecimalBase = TimeSeriesFactory.create(capacity,Decimal10f);
+        longDecimalBase.addBars(input);
 
-        // BaseDecimal -> works with BigDecimal, column based structure
-        List<Bar<BaseDecimal>> input2 = getBarInput(capacity, BaseDecimal.NUM_OPERATIONS_FACTORY);
-        BaseTimeSeries<BaseDecimal> baseDecimalBase = new BaseTimeSeries<>(input2, BaseDecimal.NUM_OPERATIONS_FACTORY);
+        // BigDecimalNum -> works with BigDecimal, column based structure
+        List<Bar<BigDecimalNum>> input2 = getBarInput(capacity, BigDecimalNum.NUM_OPERATIONS_FACTORY);
+        ColumnarTimeSeries<BigDecimalNum> baseDecimalBase = TimeSeriesFactory.create(capacity,BigDecimal);
+        baseDecimalBase.addBars(input2);
 
-        // DoubleDecimal -> works with Double, column based structure
-        List<Bar<DoubleDecimal>> input3 = getBarInput(capacity, DoubleDecimal.NUM_OPERATIONS_FACTORY);
-        BaseTimeSeries<DoubleDecimal> baseDoubleBase = new BaseTimeSeries<>(input3, DoubleDecimal.NUM_OPERATIONS_FACTORY);
+        // DoubleNum -> works with Double, column based structure
+        List<Bar<DoubleNum>> input3 = getBarInput(capacity, DoubleNum.NUM_OPERATIONS_FACTORY);
+        ColumnarTimeSeries<DoubleNum> baseDoubleBase = TimeSeriesFactory.create(capacity,TimeSeriesFactory.delegate.Double);
+        baseDoubleBase.addBars(input3);
 
         for (int i= 3; i <= upto; i++){ // for each SMA(2)-SMA(i) calculate every value and print time
             System.out.println("--------------Test (time frame 2-"+i+")--------------");
-            //long time = testNewStructure("LongDecimal",longDecimalBase, i);
-            //long time2 = testNewStructure("BaseDecimal", baseDecimalBase, i);
-            long time3 = testNewStructure("DoubleDecimal", baseDoubleBase, i);
+            long time = testNewStructure("Decimal10fNum",longDecimalBase, i);
+            long time2 = testNewStructure("BigDecimalNum", baseDecimalBase, i);
+            long time3 = testNewStructure("DoubleNum", baseDoubleBase, i);
             long time4 = testOldStructure(oldTimeSeries,i);
         }
     }
@@ -71,9 +77,9 @@ public class InterfaceTest {
      */
     public long testNewStructure(String dataType, TimeSeries series, int upto){
         long start = System.currentTimeMillis();
-        Value average = smaCalculations(series,upto);
+        Num average = smaCalculations(series,upto);
         long time = System.currentTimeMillis()-start;
-        System.out.println(String.format("[Column based %s ] time: %s lastValue: %s", dataType,time, average.toDouble()));
+        System.out.println(String.format("[Column based %s     ] time: %s lastValue: %s", dataType,time, average.toDouble()));
         return time;
     }
 
@@ -82,7 +88,7 @@ public class InterfaceTest {
         long start = System.currentTimeMillis();
         Decimal average = smaCalculations(series, upto);
         long time = System.currentTimeMillis()-start;
-        System.out.println(String.format("[Classic POJO             ] time: %s lastValue: %s", time, average.toDouble()));
+        System.out.println(String.format("[Classic POJO               ] time: %s lastValue: %s", time, average.toDouble()));
         return time;
     }
 
@@ -109,9 +115,9 @@ public class InterfaceTest {
      * @param series
      * @return
      */
-    private Value smaCalculations(TimeSeries series, int upTo){
+    private Num smaCalculations(TimeSeries series, int upTo){
         ClosePriceIndicator closePriceIndicator = new ClosePriceIndicator(series);
-        Value average = Value.NaN;
+        Num average = Num.NaN;
         for (int h = 2; h < upTo; h++) {
             SMAIndicator sma = new SMAIndicator(closePriceIndicator,h);
             for (int i = 0; i < series.getEndIndex(); i++) {
@@ -145,7 +151,7 @@ public class InterfaceTest {
         return input;
     }
 
-    private <D extends Value> List<Bar<D>> getBarInput(int capacity, NumOperationsFactory<D> numFac) {
+    private <D extends Num> List<Bar<D>> getBarInput(int capacity, NumFactory<D> numFac) {
         int initialCapacity = capacity;
         double[] input = new double[initialCapacity];
         List<Bar<D>> bars = new ArrayList<>();
@@ -158,23 +164,24 @@ public class InterfaceTest {
         return bars;
 
     }
-
+/*
     @Test
     public void floatingPointVsFixPoint(){
-        NumOperationsFactory dFac = DoubleDecimal.NUM_OPERATIONS_FACTORY;
-        NumOperationsFactory bFac = BaseDecimal.NUM_OPERATIONS_FACTORY;
+        NumFactory dFac = DoubleNum.NUM_OPERATIONS_FACTORY;
+        NumFactory bFac = BigDecimalNum.NUM_OPERATIONS_FACTORY;
 
-        TimeSeries<DoubleDecimal> tsDouble = new BaseTimeSeries<DoubleDecimal>(dFac);
-        TimeSeries<BaseDecimal> tsBigDecimal = new BaseTimeSeries<BaseDecimal>(bFac);
+        TimeSeries<DoubleNum> tsDouble = new BaseTimeSeries<DoubleNum>(dFac);
+        TimeSeries<BigDecimalNum> tsBigDecimal = new BaseTimeSeries<BigDecimalNum>(bFac);
 
-        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
-        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
-        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
-        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
-        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
-        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
-        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
-        tsDouble.addBar(new BaseBar<DoubleDecimal>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleNum>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleNum>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleNum>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleNum>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleNum>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleNum>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleNum>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
+        tsDouble.addBar(new BaseBar<DoubleNum>(ZonedDateTime.now(),.9999,.9999,.9999,.9999,.9999,dFac));
 
     }
+    */
 }

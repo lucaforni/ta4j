@@ -20,25 +20,34 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.prototype.indicator;
 
 
+import org.ta4j.core.prototype.indicator.CachedIndicator;
+import org.ta4j.core.prototype.indicator.CumulatedLossesIndicator;
+import org.ta4j.core.prototype.indicator.Indicator;
+import org.ta4j.core.prototype.num.Num;
+import org.ta4j.core.prototype.num.NumFactory;
 
 /**
- * Close price indicator.
+ * Average loss indicator.
  * <p></p>
  */
-public class ClosePriceIndicator extends CachedIndicator<Value> {
+public class AverageLossIndicator extends CachedIndicator<Num> {
 
-    private TimeSeries series;
+    private final CumulatedLossesIndicator cumulatedLosses;
+    private final NumFactory<Num> numFa = getNumFactory();
+    private final int timeFrame;
 
-    public ClosePriceIndicator(TimeSeries series) {
-        super(series);
-        this.series = series;
+    public AverageLossIndicator(Indicator<Num> indicator, int timeFrame) {
+        super(indicator);
+        this.cumulatedLosses = new CumulatedLossesIndicator(indicator, timeFrame);
+        this.timeFrame = timeFrame;
     }
 
     @Override
-    protected Value calculate(int index) {
-        return series.getClosePrice(index);
+    protected Num calculate(int index) {
+        final int realTimeFrame = Math.min(timeFrame, index + 1);
+        return cumulatedLosses.getValue(index).dividedBy(numFa.valueOf(realTimeFrame));
     }
 }

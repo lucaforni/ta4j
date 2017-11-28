@@ -20,42 +20,37 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.prototype.indicator;
 
 
-
+import org.ta4j.core.prototype.num.Num;
+import org.ta4j.core.prototype.num.NumFactory;
 
 /**
- * Simple moving average (SMA) indicator.
+ * Cumulated gains indicator.
  * <p></p>
  */
-public class SMAIndicator extends CachedIndicator<Value> {
+public class CumulatedGainsIndicator extends CachedIndicator<Num> {
 
-    private final Indicator<Value> indicator;
+    private final Indicator<Num> indicator;
 
     private final int timeFrame;
+    private final NumFactory<Num> num = getNumFactory();
 
-    public SMAIndicator(Indicator indicator, int timeFrame) {
+    public CumulatedGainsIndicator(Indicator<Num> indicator, int timeFrame) {
         super(indicator);
         this.indicator = indicator;
         this.timeFrame = timeFrame;
     }
 
     @Override
-    protected Value calculate(int index) {
-
-        Value sum = getNumFactory().ZERO();
-        for (int i = Math.max(0, index - timeFrame + 1); i <= index; i++) {
-            sum = sum.plus(indicator.getValue(i));
+    protected Num calculate(int index) {
+        Num sumOfGains = num.valueOf(0);
+        for (int i = Math.max(1, index - timeFrame + 1); i <= index; i++) {
+            if (indicator.getValue(i).isGreaterThan(indicator.getValue(i - 1))) {
+                sumOfGains = sumOfGains.plus(indicator.getValue(i).minus(indicator.getValue(i - 1)));
+            }
         }
-
-        final int realTimeFrame = Math.min(timeFrame, index + 1);
-        return sum.dividedBy(getNumFactory().valueOf(realTimeFrame));
+        return sumOfGains;
     }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + " timeFrame: " + timeFrame;
-    }
-
 }

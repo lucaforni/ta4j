@@ -20,29 +20,44 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.prototype;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.ta4j.core.prototype.indicator.Indicator;
+import org.ta4j.core.prototype.num.Num;
+import org.ta4j.core.prototype.num.NumFactory;
 
 /**
- * Average gain indicator.
- * <p></p>
+ * Abstract {@link Indicator indicator}.
+ * <p/>
  */
-public class AverageGainIndicator extends CachedIndicator<Value> {
+public abstract class AbstractIndicator<T extends Num> implements Indicator<T> {
 
-    private final CumulatedGainsIndicator cumulatedGains;
-    private final NumOperationsFactory<Value> numFa = getNumFactory();
-    private final int timeFrame;
+    /** The logger */
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    public AverageGainIndicator(Indicator<Value> indicator, int timeFrame) {
-        super(indicator);
-        this.cumulatedGains = new CumulatedGainsIndicator(indicator, timeFrame);
-        this.timeFrame = timeFrame;
+    private TimeSeries series;
+    /**
+     * Constructor.
+     * @param series the related time series
+     */
+    public AbstractIndicator(TimeSeries series) {
+        this.series = series;
     }
 
     @Override
-    protected Value calculate(int index) {
-        final int realTimeFrame = Math.min(timeFrame, index + 1);
-        return cumulatedGains.getValue(index).dividedBy(numFa.valueOf(realTimeFrame));
+    public TimeSeries<T> getTimeSeries() {
+        return series;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
+    public NumFactory<T> getNumFactory(){
+        return series.getNumFactory();
     }
 }

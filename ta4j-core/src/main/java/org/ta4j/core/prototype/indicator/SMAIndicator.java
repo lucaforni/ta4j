@@ -20,41 +20,42 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.prototype.indicator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import org.ta4j.core.prototype.num.Num;
 
 /**
- * Abstract {@link Indicator indicator}.
- * <p/>
+ * Simple moving average (SMA) indicator.
+ * <p></p>
  */
-public abstract class AbstractIndicator<T extends Value> implements Indicator<T> {
+public class SMAIndicator extends CachedIndicator<Num> {
 
-    /** The logger */
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    private final Indicator<Num> indicator;
 
-    private TimeSeries series;
-    /**
-     * Constructor.
-     * @param series the related time series
-     */
-    public AbstractIndicator(TimeSeries series) {
-        this.series = series;
+    private final int timeFrame;
+
+    public SMAIndicator(Indicator indicator, int timeFrame) {
+        super(indicator);
+        this.indicator = indicator;
+        this.timeFrame = timeFrame;
     }
 
     @Override
-    public TimeSeries<T> getTimeSeries() {
-        return series;
+    protected Num calculate(int index) {
+
+        Num sum = getNumFactory().ZERO();
+        for (int i = Math.max(0, index - timeFrame + 1); i <= index; i++) {
+            sum = sum.plus(indicator.getValue(i));
+        }
+
+        final int realTimeFrame = Math.min(timeFrame, index + 1);
+        return sum.dividedBy(getNumFactory().valueOf(realTimeFrame));
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName();
+        return getClass().getSimpleName() + " timeFrame: " + timeFrame;
     }
 
-    @Override
-    public NumOperationsFactory<T> getNumFactory(){
-        return series.getNumOperationsFactory();
-    }
 }

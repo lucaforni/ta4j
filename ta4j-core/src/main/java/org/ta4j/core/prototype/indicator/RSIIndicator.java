@@ -20,10 +20,11 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.prototype.indicator;
 
 
-import java.math.BigDecimal;
+import org.ta4j.core.prototype.num.Num;
+import org.ta4j.core.prototype.num.NumFactory;
 
 /**
  * Relative strength index indicator.
@@ -35,39 +36,39 @@ import java.math.BigDecimal;
  * RSI calculation</a>.
  *
  */
-public class RSIIndicator extends CachedIndicator<Value> {
+public class RSIIndicator extends CachedIndicator<Num> {
 
-    private final Indicator<Value> averageGainIndicator;
-    private final Indicator<Value> averageLossIndicator;
-    private final NumOperationsFactory<Value> numFa = getNumFactory();
+    private final Indicator<Num> averageGainIndicator;
+    private final Indicator<Num> averageLossIndicator;
+    private final NumFactory<Num> numFa = getNumFactory();
     
-    public RSIIndicator(Indicator<Value> indicator, int timeFrame) {
+    public RSIIndicator(Indicator<Num> indicator, int timeFrame) {
         this(new AverageGainIndicator(indicator, timeFrame),
                 new AverageLossIndicator(indicator, timeFrame));
     }
 
-    public RSIIndicator(Indicator<Value> avgGainIndicator, Indicator<Value> avgLossIndicator) {
+    public RSIIndicator(Indicator<Num> avgGainIndicator, Indicator<Num> avgLossIndicator) {
         super(avgGainIndicator);
         averageGainIndicator = avgGainIndicator;
         averageLossIndicator = avgLossIndicator;
     }
 
     @Override
-    protected Value calculate(int index) {
+    protected Num calculate(int index) {
         if (index == 0) {
             return numFa.valueOf(0);
         }
 
         // Relative strength
-        Value averageLoss = averageLossIndicator.getValue(index);
+        Num averageLoss = averageLossIndicator.getValue(index);
         if (averageLoss.isZero()) {
             return numFa.valueOf(100);
         }
-        Value averageGain = averageGainIndicator.getValue(index);
-        Value relativeStrength = averageGain.dividedBy(averageLoss);
+        Num averageGain = averageGainIndicator.getValue(index);
+        Num relativeStrength = averageGain.dividedBy(averageLoss);
 
         // Nominal case
-        Value ratio = numFa.valueOf(100).dividedBy(numFa.valueOf(1).plus(relativeStrength));
+        Num ratio = numFa.valueOf(100).dividedBy(numFa.valueOf(1).plus(relativeStrength));
         return numFa.valueOf(100).minus(ratio);
     }
 

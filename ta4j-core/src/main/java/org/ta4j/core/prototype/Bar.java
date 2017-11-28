@@ -20,8 +20,10 @@
   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package org.ta4j.core.columnar_timeSeries_and_decimal_interface;
+package org.ta4j.core.prototype;
 
+
+import org.ta4j.core.prototype.num.Num;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -33,7 +35,7 @@ import java.time.format.DateTimeFormatter;
  * <p/>
  * Bar object is aggregated open/high/low/close/volume/etc. data over a time period.
  */
-public interface Bar<D extends Value> extends Serializable {
+public interface Bar<D extends Num> extends Serializable {
 
     /**
      * @return the open price of the period
