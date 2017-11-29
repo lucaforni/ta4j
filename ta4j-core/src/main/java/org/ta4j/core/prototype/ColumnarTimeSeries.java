@@ -18,7 +18,7 @@ import java.util.stream.StreamSupport;
 public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterable<Bar<D>> {
 
     private String name;
-
+    private int removedBars;
     private ArrayList<D> openPrice;
     private ArrayList<D> minPrice;
     private ArrayList<D> maxPrice;
@@ -29,45 +29,48 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
     private ArrayList<Duration> timePeriod; // remove this by enum of period for the whole time series?
     private ArrayList<ZonedDateTime> beginTime; // work with long as timestamp?
     private ArrayList<ZonedDateTime> endTime;
-
-    private int position = -1;
     private int capacity;
-
-    private boolean isWindow = false;
-
     private NumFactory<D> numFactory;
 
 
     /**
-     * Creates a ColumnarTimeSeries with default bar capacity of 10000
+     * Creates a ColumnarTimeSeries
      * @param numFactory the {@link NumFactory factory} for the underlying {@link Num Num} implementation
      */
     public ColumnarTimeSeries(NumFactory<D> numFactory){
-        this(10000, numFactory);
+        this("unnamed",Integer.MAX_VALUE, numFactory);
     }
 
+    /**
+     *
+     * @param name the name of the time series
+     * @param numFactory the {@link NumFactory factory} for the underlying {@link Num Num} implementation
+     */
+    public ColumnarTimeSeries(String name, NumFactory<D> numFactory){
+        this(name, Integer.MAX_VALUE, numFactory);
+    }
+
+
+    /**
+     *
+     * @param capacity the capacity (default unlimited = Integer.MAX)
+     * @param numFactory the {@link NumFactory factory} for the underlying {@link Num Num} implementation
+     */
     public ColumnarTimeSeries(int capacity, NumFactory<D> numFactory){
-        this("unnamed",capacity,false, numFactory);
-    }
-
-
-    public ColumnarTimeSeries(int capacity, boolean isWindow, NumFactory<D> numFactory){
-        this("unnamed", capacity,isWindow, numFactory);
+        this("unnamed", capacity, numFactory);
     }
 
     /**
      *
      * @param name the name (e.g. ticker or symbol) of this TimeSeries
-     * @param capacity the initial capacity (will be automatically increased if isWindow = false
-     * @param isWindow if true the capacity will stay fix. If the TimeSeries is full the first entries will be shifted out
      * @param numFactory the {@link NumFactory factory} of the underlying {@Num num} implementation
      * @see {@link TimeSeriesFactory}
      */
-    public ColumnarTimeSeries(String name, int capacity, boolean isWindow, NumFactory<D> numFactory){
+    public ColumnarTimeSeries(String name, int capacity, NumFactory<D> numFactory){
         this.name = name;
         this.capacity = capacity;
-        this.isWindow = isWindow;
         this.numFactory = numFactory;
+        this.removedBars = 0;
         openPrice = new ArrayList<>();
         minPrice = new ArrayList<>();
         maxPrice = new ArrayList<>();
@@ -92,7 +95,7 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
 
     @Override
     public int getBarCount() {
-        return position+1;
+        return endTime.size();
     }
 
     @Override
@@ -100,12 +103,37 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
         return numFactory;
     }
 
+    /**
+     * Adds a bar to the time series.
+     * <p/>
+     * If the size of the time series is equal the capacity (default = Integer.MAX)
+     * the first value will be removed (and the bars do a left shift by 1)
+     *
+     * @param startTime the start time of the bar
+     * @param time the end time of the bar
+     * @param open the open price
+     * @param min the min (low) price
+     * @param max the max (high) price
+     * @param close the close price
+     * @param vol the volume
+     * @param trades the trades of the bar
+     * @param amount the amount of the bar
+     */
     public void addBar(ZonedDateTime startTime, ZonedDateTime time, D open, D min, D max, D close, D vol, int trades, D amount){
-        if(isWindow) {
-                // shift and add
+
+        if(capacity <= endTime.size()) {
+            beginTime.remove(0);
+            endTime.remove(0);
+            openPrice.remove(0);
+            minPrice.remove(0);
+            maxPrice.remove(0);
+            closePrice.remove(0);
+            volume.remove(0);
+            this.trades.remove(0);
+            this.amount.remove(0);
+
         }
 
-        position++;
         beginTime.add(startTime);
         endTime.add(time);
         openPrice.add(open);
@@ -123,16 +151,16 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
      * @param pos the index
      * @param time endTime of the bar
      * @param open open price
-     * @param min min/low price
-     * @param max max/high price
-     * @param close close/last price
+     * @param min min (low) price
+     * @param max max (high) price
+     * @param close close (last) price
      * @param vol volume
      */
     public void insertBar(int pos, ZonedDateTime time, D open, D min, D max, D close, D vol){
         if(pos < 0 || pos >= capacity){
             throw new IndexOutOfBoundsException(
                     String.format("Column of time series '%s' not accesible. pos: %s, capacity: %s, isWindow: %s",
-                            name, pos,capacity, isWindow));
+                            name, pos,capacity, isWindow()));
         }
         endTime.set(pos, time);
         openPrice.set(pos, open);
@@ -149,15 +177,16 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
     }
 
     public int getWindowSize(){
-        if(!isWindow){
-            return Integer.MAX_VALUE;
-        }
         return capacity;
     }
 
+    /**
+     * Check if this time series object is a windows
+     * @return true if the time series capacity is limited
+     */
     @Override
     public boolean isWindow(){
-        return isWindow;
+        return capacity != Integer.MAX_VALUE;
     }
 
     @Override
@@ -177,13 +206,14 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
 
     @Override
     public int getEndIndex() {
-        return position; // highest index with data
+        return endTime.size()-1; // highest index with data
     }
 
     @Override
     public int getRemovedBarCount() {
-        return 0;
+        return this.removedBars;
     }
+
 
     @Override
     public void addBar(Bar<D> bar) {
@@ -436,7 +466,7 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
 
         public BarIterator(){
             this.currentIndex = 1; // why not 0?
-            this.end = ColumnarTimeSeries.this.position;
+            this.end = ColumnarTimeSeries.this.getEndIndex();
         }
 
         public BarIterator(int currentIndex, int end){
