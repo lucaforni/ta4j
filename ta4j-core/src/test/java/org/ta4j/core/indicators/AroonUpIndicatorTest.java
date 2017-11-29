@@ -95,7 +95,7 @@ public class AroonUpIndicatorTest {
             ticks.add(tick);
         }
 
-        BaseTimeSeries series = new BaseTimeSeries("NaN test",ticks);
+        BaseTimeSeries series = new BaseTimeSeries("NaN NumClass",ticks);
         AroonUpIndicator aroonUpIndicator = new AroonUpIndicator(series, 5);
         for (int i = series.getBeginIndex(); i<= series.getEndIndex(); i++){
             assertEquals(Decimal.NaN.toString(), aroonUpIndicator.getValue(i).toString());
@@ -110,7 +110,7 @@ public class AroonUpIndicatorTest {
             Tick tick = new BaseTick(ZonedDateTime.now().plusDays(i),Decimal.NaN, maxPrice,Decimal.NaN, Decimal.NaN, Decimal.NaN);
             ticks.add(tick);
         }
-        BaseTimeSeries series = new BaseTimeSeries("NaN test",ticks);
+        BaseTimeSeries series = new BaseTimeSeries("NaN NumClass",ticks);
         AroonUpIndicator aroonUpIndicator = new AroonUpIndicator(series, 5);
         for (int i = series.getBeginIndex(); i<= series.getEndIndex(); i++){
             if (i % 2 != 0){

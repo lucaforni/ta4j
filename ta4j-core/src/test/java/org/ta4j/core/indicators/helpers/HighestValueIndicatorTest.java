@@ -78,7 +78,7 @@ public class HighestValueIndicatorTest {
             ticks.add(tick);
         }
 
-        BaseTimeSeries series = new BaseTimeSeries("NaN test",ticks);
+        BaseTimeSeries series = new BaseTimeSeries("NaN NumClass",ticks);
         HighestValueIndicator highestValue = new HighestValueIndicator(new ClosePriceIndicator(series), 5);
         for (int i = series.getBeginIndex(); i<= series.getEndIndex(); i++){
             assertEquals(Decimal.NaN.toString(),highestValue.getValue(i).toString());
@@ -94,7 +94,7 @@ public class HighestValueIndicatorTest {
             ticks.add(tick);
         }
 
-        BaseTimeSeries series = new BaseTimeSeries("NaN test",ticks);
+        BaseTimeSeries series = new BaseTimeSeries("NaN NumClass",ticks);
         HighestValueIndicator highestValue = new HighestValueIndicator(new ClosePriceIndicator(series), 2);
 
         // index is the biggest of (index, index-1)

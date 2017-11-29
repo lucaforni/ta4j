@@ -812,7 +812,7 @@ public class DirectionalMovementMinusIndicatorTest {
         }
         data = new BaseTimeSeries("FB_daily",ticks);
 
-        /* old Data (to less for this test)
+        /* old Data (to less for this NumClass)
         data = new BaseTimeSeries();
         data.addTick(new BaseTick(ZonedDateTime.now().plusDays(100), 169.95, 172.06, 169.66, 171.96, 0)); // FB, daily, 07.8.'17
         data.addTick(new BaseTick(ZonedDateTime.now().plusDays(101), 171.88, 173.05, 170.62, 171.23, 0));

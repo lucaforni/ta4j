@@ -64,7 +64,7 @@ public class TimeSeriesManagerTest {
         manager = new TimeSeriesManager(seriesForRun);
 
         strategy = new BaseStrategy(new FixedRule(0, 2, 3, 6), new FixedRule(1, 4, 7, 8));
-        strategy.setUnstablePeriod(2); // Strategy would need a real test class
+        strategy.setUnstablePeriod(2); // Strategy would need a real NumClass class
     }
 
     @Test

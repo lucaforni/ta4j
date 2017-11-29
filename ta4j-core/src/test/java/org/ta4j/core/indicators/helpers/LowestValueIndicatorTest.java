@@ -81,7 +81,7 @@ public class LowestValueIndicatorTest {
             ticks.add(tick);
         }
 
-        BaseTimeSeries series = new BaseTimeSeries("NaN test",ticks);
+        BaseTimeSeries series = new BaseTimeSeries("NaN NumClass",ticks);
         LowestValueIndicator lowestValue = new LowestValueIndicator(new ClosePriceIndicator(series), 5);
         for (int i = series.getBeginIndex(); i<= series.getEndIndex(); i++){
             assertEquals(Decimal.NaN.toString(),lowestValue.getValue(i).toString());
@@ -97,7 +97,7 @@ public class LowestValueIndicatorTest {
             ticks.add(tick);
         }
 
-        BaseTimeSeries series = new BaseTimeSeries("NaN test",ticks);
+        BaseTimeSeries series = new BaseTimeSeries("NaN NumClass",ticks);
         LowestValueIndicator lowestValue = new LowestValueIndicator(new ClosePriceIndicator(series), 2);
         for (int i = series.getBeginIndex(); i<= series.getEndIndex(); i++){
             if (i % 2 != 0){

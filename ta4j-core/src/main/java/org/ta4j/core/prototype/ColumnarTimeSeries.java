@@ -6,42 +6,41 @@ import org.ta4j.core.prototype.num.NumFactory;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
  * A time series that stores the bar data following a columnar store approach
  * @param <D> the data type for OHLC data, volume and amount
- *           see {@link num}
+ *           see {@link Num}
  *           see {@link TimeSeries}
  */
 public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterable<Bar<D>> {
 
-    protected String name;
+    private String name;
 
-    private Num[] openPrice;
-    private Num[] minPrice;
-    private Num[] maxPrice;
-    private Num[] closePrice;
-    private Num[] volume;
-    private int[] trades;
-    private Num[] amount;
-    protected Duration[] timePeriod; // remove this by enum of period for the whole time series?
-    protected ZonedDateTime[] beginTime; // work with long as timestamp?
-    protected ZonedDateTime[] endTime;
+    private ArrayList<D> openPrice;
+    private ArrayList<D> minPrice;
+    private ArrayList<D> maxPrice;
+    private ArrayList<D> closePrice;
+    private ArrayList<D> volume;
+    private ArrayList<Integer> trades;
+    private ArrayList<D> amount;
+    private ArrayList<Duration> timePeriod; // remove this by enum of period for the whole time series?
+    private ArrayList<ZonedDateTime> beginTime; // work with long as timestamp?
+    private ArrayList<ZonedDateTime> endTime;
 
-    protected int position = -1;
-    protected int capacity;
-    protected int removed=0;
-    protected boolean isWindow = false;
+    private int position = -1;
+    private int capacity;
 
-    protected NumFactory<D> numFactory;
+    private boolean isWindow = false;
+
+    private NumFactory<D> numFactory;
 
 
     /**
      * Creates a ColumnarTimeSeries with default bar capacity of 10000
-     * @param numFactory
+     * @param numFactory the {@link NumFactory factory} for the underlying {@link Num Num} implementation
      */
     public ColumnarTimeSeries(NumFactory<D> numFactory){
         this(10000, numFactory);
@@ -69,16 +68,16 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
         this.capacity = capacity;
         this.isWindow = isWindow;
         this.numFactory = numFactory;
-        openPrice = new Num[capacity]; //https://stackoverflow.com/questions/529085/how-to-create-a-generic-array-in-java
-        minPrice = new Num[capacity];
-        maxPrice = new Num[capacity];
-        trades = new int[capacity];
-        closePrice = new Num[capacity];
-        volume = new Num[capacity];
-        amount = new Num[capacity];
-        timePeriod = new Duration[capacity];
-        beginTime = new ZonedDateTime[capacity];
-        endTime = new ZonedDateTime[capacity];
+        openPrice = new ArrayList<>();
+        minPrice = new ArrayList<>();
+        maxPrice = new ArrayList<>();
+        trades = new ArrayList<>();
+        closePrice = new ArrayList<>();
+        volume = new ArrayList<>();
+        amount = new ArrayList<>();
+        timePeriod = new ArrayList<>();
+        beginTime = new ArrayList<>();
+        endTime = new ArrayList<>();
     }
 
     @Override
@@ -101,20 +100,22 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
         return numFactory;
     }
 
-    public void addBar(ZonedDateTime time, D open, D min, D max, D close, D vol){
-        if(capacity <= position+1) {
-            throw new IndexOutOfBoundsException(
-                    String.format("Columns of time series '%s' are full. index: %s, capacity: %s, isWindow: %s",
-                            name, position,capacity, isWindow));
+    public void addBar(ZonedDateTime startTime, ZonedDateTime time, D open, D min, D max, D close, D vol, int trades, D amount){
+        if(isWindow) {
+                // shift and add
         }
+
         position++;
-        endTime[position] = time;
-        openPrice[position] = open;
-        minPrice[position] = min;
-        maxPrice[position] = max;
-        closePrice[position] = close;
-        volume[position] = vol;
-        increaseArraySize();
+        beginTime.add(startTime);
+        endTime.add(time);
+        openPrice.add(open);
+        minPrice.add(min);
+        maxPrice.add(max);
+        closePrice.add(close);
+        volume.add(vol);
+        this.trades.add(trades);
+        this.amount.add(amount);
+
     }
 
     /**
@@ -133,12 +134,12 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
                     String.format("Column of time series '%s' not accesible. pos: %s, capacity: %s, isWindow: %s",
                             name, pos,capacity, isWindow));
         }
-        endTime[pos] = time;
-        openPrice[pos] = open;
-        minPrice[pos] = min;
-        maxPrice[pos] = max;
-        closePrice[pos] = close;
-        volume[pos] = vol;
+        endTime.set(pos, time);
+        openPrice.set(pos, open);
+        minPrice.set(pos, min);
+        maxPrice.set(pos, max);
+        closePrice.set(pos, close);
+        volume.set(pos, vol);
     }
 
     public void addBars(List<Bar<D>> bars){
@@ -186,92 +187,93 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
 
     @Override
     public void addBar(Bar<D> bar) {
-        addBar(bar.getEndTime(),bar.getOpenPrice(),bar.getMinPrice(), bar.getMaxPrice(), bar.getClosePrice(),bar.getVolume());
+        addBar(bar.getBeginTime(), bar.getEndTime(),bar.getOpenPrice(),bar.getMinPrice(), bar.getMaxPrice(),
+                bar.getClosePrice(),bar.getVolume(),bar.getTrades(), bar.getAmount());
     }
 
     public D getOpenPrice(int index){
-        return (D) openPrice[index];
+        return (D) openPrice.get(index);
     }
 
     public D getMinPrice(int index){
-        return (D) minPrice[index];
+        return (D) minPrice.get(index);
     }
 
     public D getMaxPrice(int index){
-        return (D)  maxPrice[index];
+        return (D)  maxPrice.get(index);
     }
 
     public D getClosePrice(int index){
-        return (D) closePrice[index];
+        return (D) closePrice.get(index);
     }
 
     public D getAmount(int index){
-        return (D) amount[index];
+        return (D) amount.get(index);
     }
 
     public D getVolume(int index){
-        return (D) volume[index];
+        return (D) volume.get(index);
     }
 
     public int getTrades(int index){
-        return trades[index];
+        return trades.get(index);
     }
 
     public Duration getDuration(int index){
-        return timePeriod[index];
+        return timePeriod.get(index);
     }
 
     public ZonedDateTime getBeginTime(int index){
-        return beginTime[index];
+        return beginTime.get(index);
     }
 
     public ZonedDateTime getEndTime(int index){
-        return endTime[index];
+        return endTime.get(index);
     }
 
-    public Stream<Num> getOpenPrices(){
-        return Arrays.stream(openPrice);
+    public Stream<D> getOpenPrices(){
+        return openPrice.stream();
     }
 
-    public Stream<Num> getMinPrices(){
-        return Arrays.stream(minPrice);
+    public Stream<D> getMinPrices(){
+        return minPrice.stream();
     }
 
-    public Stream<Num> getMaxPrices(){
-        return Arrays.stream(maxPrice);
+    public Stream<D> getMaxPrices(){
+        return maxPrice.stream();
     }
 
-    public Stream<Num> getClosePrices(){
-        return Arrays.stream(closePrice);
+    public Stream<D> getClosePrices(){
+        return closePrice.stream();
     }
 
-    public Stream<Num> getVolumes(){
-        return Arrays.stream(volume);
+    public Stream<D> getVolumes(){
+        return volume.stream();
     }
 
-    public Stream<Num> getAmounts(){
-        return Arrays.stream(amount);
+    public Stream<D> getAmounts(){
+        return amount.stream();
     }
 
-    public IntStream getTrades_stream(){
-        return Arrays.stream(trades);
+    public Stream<Integer> getTrades_stream(){
+        return trades.stream();
     }
 
     public Stream<Duration> getTimePeriods(){
-        return Arrays.stream(timePeriod);
+        return timePeriod.stream();
     }
 
     public Stream<ZonedDateTime> getBeginTimes(){
-        return Arrays.stream(beginTime);
+        return beginTime.stream();
     }
 
     public Stream<ZonedDateTime> getEndTimes(){
-        return Arrays.stream(endTime);
+        return endTime.stream();
     }
 
-    public Stream<Bar> stream(int start, int end) {
+    public Stream<Bar<D>> stream(int start, int end) {
         final Iterator<Bar<D>> iterator = iterator(start, end);
-        final Spliterator<Bar> spliterator
+        final Spliterator<Bar<D>> spliterator
                 = Spliterators.spliteratorUnknownSize(iterator, 0);
         return StreamSupport.stream(spliterator, false);
     }
@@ -296,55 +298,6 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
         return new BarAccessCursor(index);
     }
 
-
-    private void increaseArraySize(){
-        if(isWindow){
-            return;
-        }
-        if(capacity <= position+1){
-            //Todo: implement array expansion logic
-        }
-    }
-
-    private int findUpperTimestampBoundBegin(ZonedDateTime max) {
-        int maxNdx = Arrays.binarySearch(beginTime, max);
-        if (maxNdx < 0)
-            maxNdx = (-maxNdx) - 1;
-        while (maxNdx < (beginTime.length - 1) && beginTime[maxNdx] == beginTime[maxNdx + 1])
-            maxNdx++;
-        return maxNdx;
-    }
-
-    private int findLowerTimestampBoundBegin(ZonedDateTime min) {
-        int minNdx = Arrays.binarySearch(beginTime, min);
-        if (minNdx < 0)
-            minNdx = (-minNdx) - 1;
-        while (minNdx > 0 && beginTime[minNdx] == beginTime[minNdx - 1])
-            minNdx--;
-        return minNdx;
-    }
-
-    private int findUpperTimestampBoundEnd(ZonedDateTime max) {
-        int maxNdx = Arrays.binarySearch(endTime, max);
-        if (maxNdx < 0)
-            maxNdx = (-maxNdx) - 1;
-        while (maxNdx < (endTime.length - 1) && endTime[maxNdx] == endTime[maxNdx + 1])
-            maxNdx++;
-        return maxNdx;
-    }
-
-    private int findLowerTimestampBoundEnd(ZonedDateTime min) {
-        int minNdx = Arrays.binarySearch(endTime, min);
-        if (minNdx < 0)
-            minNdx = (-minNdx) - 1;
-        while (minNdx > 0 && endTime[minNdx] == endTime[minNdx - 1])
-            minNdx--;
-        return minNdx;
-    }
-
-
-
-
     public class BarAccessCursor implements Bar<D>{
         private int index;
 
@@ -360,103 +313,104 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
 
         @Override
         public D getOpenPrice() {
-            return (D) ColumnarTimeSeries.this.openPrice[index];
+            return openPrice.get(index);
         }
 
         protected void setOpenPrice(D openPrice){ // i think it is faster not to use setter, but indices
-            ColumnarTimeSeries.this.openPrice[index] = openPrice;
+            ColumnarTimeSeries.this.openPrice.set(index, openPrice);
         }
 
         @Override
         public D getMinPrice() {
-            return (D) ColumnarTimeSeries.this.minPrice[index];
+            return minPrice.get(index);
         }
 
         protected void setMinPrice(D minPrice){ // i think it is faster not to use setter, but indices
-            ColumnarTimeSeries.this.minPrice[index] = minPrice;
+            ColumnarTimeSeries.this.minPrice.set(index, minPrice);
         }
 
         @Override
         public D getMaxPrice() {
-            return (D) ColumnarTimeSeries.this.maxPrice[index];
+            return maxPrice.get(index);
         }
 
         protected void setMaxPrice(D maxPrice){ // i think it is faster not to use setter, but indices
-            ColumnarTimeSeries.this.maxPrice[index] = maxPrice;
+            ColumnarTimeSeries.this.maxPrice.set(index, maxPrice);
         }
 
         @Override
         public D getClosePrice() {
-            return (D) ColumnarTimeSeries.this.closePrice[index];
+            return ColumnarTimeSeries.this.closePrice.get(index);
         }
 
 
         protected void setClosePrice(D closePrice){ // i think it is faster not to use setter, but indices
-            ColumnarTimeSeries.this.closePrice[index] = closePrice;
+            ColumnarTimeSeries.this.closePrice.set(index, closePrice);
         }
 
         @Override
         public D getVolume() {
-            return (D) ColumnarTimeSeries.this.volume[index];
+            return ColumnarTimeSeries.this.getVolume(index);
         }
 
         protected void setVolumen(D volume){
-            ColumnarTimeSeries.this.volume[index] = volume;
+            ColumnarTimeSeries.this.volume.set(index, volume);
         }
 
         @Override
         public int getTrades() {
-            return ColumnarTimeSeries.this.trades[index];
+            return ColumnarTimeSeries.this.trades.get(index);
         }
 
         protected void setTrades(int trades){
-            ColumnarTimeSeries.this.trades[index] = trades;
+            ColumnarTimeSeries.this.trades.set(index, trades);
         }
 
         @Override
         public D getAmount() {
-            return (D) ColumnarTimeSeries.this.amount[index];
+            return (D) ColumnarTimeSeries.this.amount.get(index);
         }
 
         protected void setAmount(D amount){
-            ColumnarTimeSeries.this.amount[index] = amount;
+            ColumnarTimeSeries.this.amount.set(index, amount);
         }
 
         @Override
         public Duration getTimePeriod() {
-            return ColumnarTimeSeries.this.timePeriod[index];
+            return ColumnarTimeSeries.this.timePeriod.get(index);
         }
 
         @Override
         public ZonedDateTime getBeginTime() {
-            return ColumnarTimeSeries.this.beginTime[index];
+            return ColumnarTimeSeries.this.beginTime.get(index);
         }
 
         @Override
         public ZonedDateTime getEndTime() {
-            return ColumnarTimeSeries.this.endTime[index];
+            return ColumnarTimeSeries.this.endTime.get(index);
         }
 
         @Override
         public void addTrade(D tradeVolume, D tradePrice) {
-            if (openPrice[index] == null) {
-                openPrice[index] = tradePrice;
+            if (openPrice.get(index) == null) {
+                openPrice.set(index, tradePrice);
             }
-            closePrice[index] = tradePrice;
+            closePrice.set(index, tradePrice);
 
-            if (maxPrice[index] == null) {
-                maxPrice[index] = tradePrice;
+            if (maxPrice.get(index) == null) {
+                maxPrice.set(index, tradePrice);
             } else {
-                maxPrice[index] = maxPrice[index].isLessThan(tradePrice) ? tradePrice : maxPrice[index];
+                maxPrice.set(index, maxPrice.get(index).isLessThan(tradePrice) ? tradePrice : maxPrice.get(index));
             }
-            if (minPrice[index] == null) {
-                minPrice[index] = tradePrice;
+            if (minPrice.get(index) == null) {
+                minPrice.set(index, tradePrice);
             } else {
-                minPrice[index] = minPrice[index].isGreaterThan(tradePrice) ? tradePrice : minPrice[index];
+                minPrice.set(index, minPrice.get(index).isGreaterThan(tradePrice) ? tradePrice : minPrice.get(index));
             }
-            volume[index] = volume[index].plus(tradeVolume);
-            amount[index] = amount[index].plus(tradeVolume.multipliedBy(tradePrice));
-            trades[index]++;
+
+            volume.set(index, (D) tradeVolume.plus(volume.get(index)));
+            amount.set(index, (D) amount.get(index).plus(tradeVolume.multipliedBy(tradePrice)));
+            trades.set(index, trades.get(index)+1);
         }
 
         @Override
@@ -492,52 +446,52 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
 
         @Override
         public D getOpenPrice() {
-            return (D) ColumnarTimeSeries.this.openPrice[currentIndex];
+            return openPrice.get(currentIndex);
         }
 
         @Override
         public D getMinPrice() {
-            return (D) ColumnarTimeSeries.this.minPrice[currentIndex];
+            return (D) ColumnarTimeSeries.this.minPrice.get(currentIndex);
         }
 
         @Override
         public D getMaxPrice() {
-            return (D) ColumnarTimeSeries.this.maxPrice[currentIndex];
+            return (D) ColumnarTimeSeries.this.maxPrice.get(currentIndex);
         }
 
         @Override
         public D getClosePrice() {
-            return (D) ColumnarTimeSeries.this.closePrice[currentIndex];
+            return (D) ColumnarTimeSeries.this.closePrice.get(currentIndex);
         }
 
         @Override
         public D getVolume() {
-            return (D) ColumnarTimeSeries.this.volume[currentIndex];
+            return (D) ColumnarTimeSeries.this.volume.get(currentIndex);
         }
 
         @Override
         public int getTrades() {
-            return ColumnarTimeSeries.this.trades[currentIndex];
+            return ColumnarTimeSeries.this.trades.get(currentIndex);
         }
 
         @Override
         public D getAmount() {
-            return (D) ColumnarTimeSeries.this.amount[currentIndex];
+            return (D) ColumnarTimeSeries.this.amount.get(currentIndex);
         }
 
         @Override
         public Duration getTimePeriod() {
-            return ColumnarTimeSeries.this.timePeriod[currentIndex];
+            return ColumnarTimeSeries.this.timePeriod.get(currentIndex);
         }
 
         @Override
         public ZonedDateTime getBeginTime() {
-            return ColumnarTimeSeries.this.beginTime[currentIndex];
+            return ColumnarTimeSeries.this.beginTime.get(currentIndex);
         }
 
         @Override
         public ZonedDateTime getEndTime() {
-            return ColumnarTimeSeries.this.endTime[currentIndex];
+            return ColumnarTimeSeries.this.endTime.get(currentIndex);
         }
 
         @Override
@@ -554,24 +508,25 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
 
         @Override
         public void addTrade(D tradeVolume, D tradePrice) {
-            if (openPrice[currentIndex] == null) {
-                openPrice[currentIndex] = tradePrice;
+            if (openPrice.get(currentIndex) == null) {
+                openPrice.set(currentIndex, tradePrice);
             }
-            closePrice[currentIndex] = tradePrice;
+            closePrice.set(currentIndex, tradePrice);
 
-            if (maxPrice[currentIndex] == null) {
-                maxPrice[currentIndex] = tradePrice;
+            if (maxPrice.get(currentIndex) == null) {
+                maxPrice.set(currentIndex, tradePrice);
             } else {
-                maxPrice[currentIndex] = maxPrice[currentIndex].isLessThan(tradePrice) ? tradePrice : maxPrice[currentIndex];
+                maxPrice.set(currentIndex, maxPrice.get(currentIndex).isLessThan(tradePrice) ? tradePrice : maxPrice.get(currentIndex));
             }
-            if (minPrice[currentIndex] == null) {
-                minPrice[currentIndex] = tradePrice;
+            if (minPrice.get(currentIndex) == null) {
+                minPrice.set(currentIndex, tradePrice);
             } else {
-                minPrice[currentIndex] = minPrice[currentIndex].isGreaterThan(tradePrice) ? tradePrice : minPrice[currentIndex];
+                minPrice.set(currentIndex, minPrice.get(currentIndex).isGreaterThan(tradePrice) ? tradePrice : minPrice.get(currentIndex));
             }
-            volume[currentIndex] = volume[currentIndex].plus(tradeVolume);
-            amount[currentIndex] = amount[currentIndex].plus(tradeVolume.multipliedBy(tradePrice));
-            trades[currentIndex]++;
+
+            volume.set(currentIndex, (D) tradeVolume.plus(volume.get(currentIndex)));
+            amount.set(currentIndex, (D) amount.get(currentIndex).plus(tradeVolume.multipliedBy(tradePrice)));
+            trades.set(currentIndex, trades.get(currentIndex)+1);
         }
 
         @Override

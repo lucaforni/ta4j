@@ -63,7 +63,7 @@ public class PreviousValueIndicatorTest {
             Tick tick = new BaseTick(dateTime, open, close, max, min, i);
             ticks.add(tick);
         }
-        this.series = new BaseTimeSeries("test", ticks);
+        this.series = new BaseTimeSeries("NumClass", ticks);
 
         this.openPriceIndicator = new OpenPriceIndicator(this.series);
         this.minPriceIndicator = new MinPriceIndicator(this.series);
@@ -76,21 +76,21 @@ public class PreviousValueIndicatorTest {
     @Test
     public void shouldBePreviousValueFromIndicator() {
 
-        //test 1 with openPrice-indicator
+        //NumClass 1 with openPrice-indicator
         prevValueIndicator = new PreviousValueIndicator(openPriceIndicator);
         assertEquals(prevValueIndicator.getValue(0), openPriceIndicator.getValue(0));
         for (int i = 1; i < this.series.getTickCount(); i++) {
             assertEquals(prevValueIndicator.getValue(i), openPriceIndicator.getValue(i-1));
         }
 
-        //test 2 with minPrice-indicator
+        //NumClass 2 with minPrice-indicator
         prevValueIndicator = new PreviousValueIndicator(minPriceIndicator);
         assertEquals(prevValueIndicator.getValue(0), minPriceIndicator.getValue(0));
         for (int i = 1; i < this.series.getTickCount(); i++) {
             assertEquals(prevValueIndicator.getValue(i), minPriceIndicator.getValue(i-1));
         }
 
-        //test 3 with maxPrice-indicator
+        //NumClass 3 with maxPrice-indicator
         prevValueIndicator = new PreviousValueIndicator(maxPriceIndicator);
         assertEquals(prevValueIndicator.getValue(0), maxPriceIndicator.getValue(0));
         for (int i = 1; i < this.series.getTickCount(); i++) {
@@ -107,7 +107,7 @@ public class PreviousValueIndicatorTest {
 
     private void testWithN(int n) {
 
-        // test 1 with volume-indicator
+        // NumClass 1 with volume-indicator
         prevValueIndicator = new PreviousValueIndicator(volumeIndicator,n);
         for (int i = 0; i < n; i++) {
             assertEquals(prevValueIndicator.getValue(i), volumeIndicator.getValue(0));
@@ -116,7 +116,7 @@ public class PreviousValueIndicatorTest {
             assertEquals(prevValueIndicator.getValue(i), volumeIndicator.getValue(i-n));
         }
 
-        // test 2 with ema-indicator
+        // NumClass 2 with ema-indicator
         prevValueIndicator = new PreviousValueIndicator(emaIndicator,n);
         for (int i = 0; i < n; i++) {
             assertEquals(prevValueIndicator.getValue(i), emaIndicator.getValue(0));

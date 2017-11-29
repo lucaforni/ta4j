@@ -33,7 +33,7 @@ import org.ta4j.core.indicators.helpers.PreviousValueIndicator;
  * <p></p>
  * Satisfied when the difference of the value of the {@link Indicator indicator}
  * and the previous (n-th) value of the {@link Indicator indicator} is between the values of
- * maxSlope or/and minSlope. It can test both, positive and negative slope.
+ * maxSlope or/and minSlope. It can NumClass both, positive and negative slope.
  */
 public class InSlopeRule extends AbstractRule {
 
