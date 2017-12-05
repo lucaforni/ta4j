@@ -18,7 +18,7 @@ import java.util.stream.StreamSupport;
 public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterable<Bar<D>> {
 
     private String name;
-    private int removedBars;
+
     private ArrayList<D> openPrice;
     private ArrayList<D> minPrice;
     private ArrayList<D> maxPrice;
@@ -29,8 +29,10 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
     private ArrayList<Duration> timePeriod; // remove this by enum of period for the whole time series?
     private ArrayList<ZonedDateTime> beginTime; // work with long as timestamp?
     private ArrayList<ZonedDateTime> endTime;
+
     private int capacity;
-    private NumFactory<D> numFactory;
+    private int removedBars; // needed for caching logic in CachedIndicator
+    private NumFactory<D> numFactory; // needed for valueOf transformations
 
 
     /**
@@ -131,7 +133,7 @@ public class ColumnarTimeSeries<D extends Num> implements TimeSeries<D>, Iterabl
             volume.remove(0);
             this.trades.remove(0);
             this.amount.remove(0);
-
+            removedBars++;
         }
 
         beginTime.add(startTime);
