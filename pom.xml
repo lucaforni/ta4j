@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.ta4j</groupId>
+    <groupId>com.modalsource.org.ta4j</groupId>
     <artifactId>ta4j-parent</artifactId>
-    <version>0.11-SNAPSHOT</version>
+    <version>0.11.0.20180122-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Ta4j Parent</name>
@@ -28,19 +28,21 @@
         <url>http://github.com/ta4j/ta4j/issues</url>
     </issueManagement>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus snapshot repository</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Sonatype Nexus release repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
-
+<!-- vedi userHome/.m2/settings.xml per la definizione delle credenziali -->
+<distributionManagement>
+    <repository>
+      <id>modalsource-nexus-releases</id>
+      <name>Releases</name>
+      <url>http://nexus.modalsource.com/repository/maven-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>modalsource-nexus-snapshots</id>
+      <name>Snapshot</name>
+      <url>http://nexus.modalsource.com/repository/maven-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+  
+  
     <ciManagement>
         <url>http://travis-ci.org/ta4j/ta4j</url>
     </ciManagement>
@@ -61,6 +63,9 @@
         <!-- Encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        
+        <parsedVersion.osgiVersion>${project.version}</parsedVersion.osgiVersion>
+        
     </properties>
     
     <profiles>
@@ -77,9 +82,9 @@
                         <extensions>true</extensions>
                         <configuration>
                             <!-- The Base URL of Nexus instance where we want to stage -->
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <nexusUrl>https://nexus.modalsource.com/</nexusUrl>
                             <!-- The server "id" element from settings to use authentication from -->
-                            <serverId>sonatype-nexus-staging</serverId>
+                            <serverId>modalsource-nexus</serverId>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -136,6 +141,12 @@
     </profiles>
 
     <build>
+     <resources>
+      <resource>
+        <directory>${project.basedir}/src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
         <plugins>
 
             <!-- Build source and target -->
@@ -150,6 +161,24 @@
                     <showWarnings>true</showWarnings>
                 </configuration>
             </plugin>
+
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-jar-plugin</artifactId>
+      <version>2.3.1</version>
+      <configuration>
+        <archive>
+          <manifestEntries>
+            <Bundle-Version>${parsedVersion.osgiVersion}</Bundle-Version>
+            <Bundle-Description>${project.description}</Bundle-Description>
+            <X-Compile-Source-JDK>${maven.compiler.source}</X-Compile-Source-JDK>
+            <X-Compile-Target-JDK>${maven.compiler.target}</X-Compile-Target-JDK>
+            <Implementation-Version>${project.version}</Implementation-Version>
+          </manifestEntries>
+          <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+        </archive>
+      </configuration>
+    </plugin>
 
             <!-- License headers -->
             <plugin>

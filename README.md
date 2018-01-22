@@ -1,5 +1,10 @@
 # ta4j [![Build Status](https://travis-ci.org/ta4j/ta4j.svg?branch=master)](https://travis-ci.org/ta4j/ta4j) [![Chat on Riot.im](https://img.shields.io/badge/chat-riot.im-green.svg)](https://riot.im/app/#/room/#ta4j:matrix.org)
 
+### Modalsource note
+Per deploiare usare il comando "mvn deploy"
+Ancora da mettere a posto la creazione del manifest osgi
+
+
 ***Technical Analysis For Java***
 
 ![Ta4 main chart](https://raw.githubusercontent.com/wiki/mdeverdelhan/ta4j/img/ta4j_main_chart.png)
