@@ -4,6 +4,20 @@
 Per deploiare usare il comando "mvn deploy"
 Ancora da mettere a posto la creazione del manifest osgi
 
+Per mantenere in sync il repository con il progetto originale:
+* 1. Clone your fork:
+
+    git clone git@github.com:YOUR-USERNAME/YOUR-FORKED-REPO.git
+
+* 2. Add remote from original repository in your forked repository: 
+
+    cd into/cloned/fork-repo
+    git remote add upstream git://github.com/ORIGINAL-DEV-USERNAME/REPO-YOU-FORKED-FROM.git
+    git fetch upstream
+
+* 3. Updating your fork from original repo to keep up with their changes:
+
+    git pull upstream master
 
 ***Technical Analysis For Java***
 
